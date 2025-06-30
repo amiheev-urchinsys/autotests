@@ -14,7 +14,6 @@ class LoginPage:
         self.password_input = page.locator('#password')
         self.login_button = page.get_by_role("button", name="Log in")
         self.page_title = page.locator('.MuiContainer-root h1')
-        self.wrong_credentials_error = page.locator('.MuiAlert-message')
         self.forgot_password_button = page.locator('div[class="login__forgot"]')
         self.error_message = page.locator('.MuiAlert-message')
 
