@@ -1,0 +1,16 @@
+{
+  "register_payloads": [
+    {
+      "owner": {
+        "email": "amiheev+50@urchinsys.com",
+        "applicationModuleTypes": [
+          "DATASTORE",
+          "DOCUMENT_INSIGHTS",
+          "FORMS",
+          "WEB_AUTOMATION"
+        ],
+        "overrideLastInvite": true
+      }
+    }
+  ]
+}
