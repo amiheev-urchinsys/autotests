@@ -1,7 +1,7 @@
 from playwright.sync_api import Page
 
 
-class ForgotPasswordPage:
+class UpdatePasswordPage:
     def __init__(self, page: Page):
         """
         Initializes the Home page object with web element locators.
@@ -9,10 +9,12 @@ class ForgotPasswordPage:
         :param page: Playwright Page object representing the browser tab or frame.
         """
         self.page = page
-        self.email_input = page.locator('div[class="forgot"] input[name="email"]')
-        self.send_button = page.get_by_role("button", name="Send")
+        self.page_title = page.locator('div[class="update"] h1')
+        self.page_description = page.locator('div[class="update"] p[class="update__text"]')
+        self.new_password_input = page.locator('#password')
+        self.confirm_new_password_input = page.locator('#passwordConfirmation')
+        self.update_button = page.get_by_role("button", name="Update")
         self.back_to_login_button = page.get_by_role("button", name="Back to log in")
-        self.page_title = page.locator('.forgot__head h1')
 
 
     def navigate_to_login_page(self):

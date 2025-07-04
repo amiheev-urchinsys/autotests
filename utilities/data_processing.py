@@ -1,4 +1,5 @@
 import json
+import re
 
 
 def get_list_from_file(file_name, list_title):
@@ -42,3 +43,25 @@ def get_value_by_key_from_list(data, target_key):
                     return result
 
     return None  # return None, if a key is not found
+
+
+def get_register_link_from_the_email_body(body):
+    """
+    Returns a register link from the html body of the letter
+
+    :param body: html body of a letter
+    :return: Register link
+    """
+    reg_link = re.search(r'href="([^"]+register-invite[^"]+)"', body)
+    return reg_link.group(1)
+
+
+def get_create_new_password_link_from_the_email_body(body):
+    """
+    Returns a register link from the html body of the letter
+
+    :param body: api request response
+    :return: Register link
+    """
+    reg_link = re.search(r'href="([^"]+create-password[^"]+)"', body)
+    return reg_link.group(1)

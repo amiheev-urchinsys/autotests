@@ -25,10 +25,13 @@ class AdminConsolePage:
             :param page: Playwright Page object.
             """
             self.page = page
+            self.invite_new_owner_button = page.get_by_role("button", name="Invite new owner")
             self.filter_button = page.get_by_role("button", name="Filter")
             self.filter_tab = AdminConsolePage.CompaniesTab.FilterTab(page)
+            self.invite_new_owner_user_popup = AdminConsolePage.CompaniesTab.InviteNewOwnerUserPopUp(page)
             self.table_row = page.locator('tbody tr')
             self.company_row = page.locator('tbody div').filter(has_text="testingCompany")
+            self.success_popup = AdminConsolePage.CompaniesTab.SuccessPopUp(page)
 
         def navigate_to_company_page(self):
             from pageObjects.companyPage import CompanyPage
@@ -48,3 +51,26 @@ class AdminConsolePage:
                 self.page = page
                 self.company_input = page.locator('input[name="organizationName"]')
                 self.apply_button = page.get_by_role("button", name="Apply")
+
+        class InviteNewOwnerUserPopUp:
+
+            def __init__(self, page: Page):
+                """
+                Popup Invite New Owner User component within the Companies tab.
+
+                :param page: Playwright Page object.
+                """
+                self.page = page
+                self.email_input = page.get_by_role("textbox", name="Email address")
+                self.invite_button = page.get_by_role("button", name="Invite")
+
+        class SuccessPopUp:
+
+            def __init__(self, page: Page):
+                """
+                Popup Invite New Owner User component within the Companies tab.
+
+                :param page: Playwright Page object.
+                """
+                self.page = page
+                self.title = page.locator('div[role="presentation"] h3')
