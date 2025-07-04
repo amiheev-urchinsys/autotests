@@ -81,13 +81,10 @@ def test_invite_new_owner(playwright: Playwright):
     # Steps to register a new owner
     page.goto(link)
     on_register_company_owner_page = RegisterCompanyOwnerPage(page)
-    on_register_company_owner_page.first_name_input.fill("autotestFirstName")
-    on_register_company_owner_page.last_name_input.fill("autotestLastName")
-    on_register_company_owner_page.password_input.fill("EM#@YgnHy8")
-    on_register_company_owner_page.confirm_password_input.fill("EM#@YgnHy8")
-    on_register_company_owner_page.company_input.fill("autotest_create_company")
-    on_register_company_owner_page.privacy_policy_checkbox.check()
-    on_register_company_owner_page.terms_of_use_checkbox.check()
+    on_register_company_owner_page.fill_in_the_registration_form("autotestFirstName",
+                                                                 "autotestLastName",
+                                                                 "EM#@YgnHy8",
+                                                                 "autotest_create_company")
     # Wait until request is finished and then continue
     with page.expect_response("**/api/account-service/auth-user/register-invite") as resp_info:
         on_register_company_owner_page.register_button.click()

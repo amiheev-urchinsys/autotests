@@ -1,8 +1,6 @@
 from playwright.sync_api import Page
 
 
-
-
 class RegisterCompanyOwnerPage:
 
     def __init__(self, page: Page):
@@ -21,6 +19,15 @@ class RegisterCompanyOwnerPage:
         self.terms_of_use_checkbox = page.locator('div[class="register"] input[name="terms"]')
         self.register_button = page.get_by_role("button", name="Register")
         self.success_page = RegisterCompanyOwnerPage.SuccessPage(page)
+
+    def fill_in_the_registration_form(self, first_name, last_name, password, company_name):
+        self.first_name_input.fill(first_name)
+        self.last_name_input.fill(last_name)
+        self.password_input.fill(password)
+        self.confirm_password_input.fill(password)
+        self.company_input.fill(company_name)
+        self.privacy_policy_checkbox.check()
+        self.terms_of_use_checkbox.check()
 
     class SuccessPage:
 
