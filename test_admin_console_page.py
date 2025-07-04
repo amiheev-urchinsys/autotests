@@ -76,7 +76,7 @@ def test_invite_new_owner(playwright: Playwright):
     expected_text = "Success!"
     expect(on_admin_console_page.companies_tab.success_popup.title).to_have_text(expected_text)
     # Steps to get register link from email
-    body = wait_for_email_and_read(playwright, temp_email_data["email_id"])
+    body = wait_for_email_and_read(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
     link = get_register_link_from_the_email_body(body)
     # Steps to register a new owner
     page.goto(link)
@@ -101,5 +101,5 @@ def test_invite_new_owner(playwright: Playwright):
     expected_text = "Welcome back, autotestFirstName!"
     expect(on_home_page.user_greeting_text).to_have_text(expected_text)
     # Delete all emails in the inbox
-    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"])
+    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
     assert response.ok

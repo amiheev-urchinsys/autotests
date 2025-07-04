@@ -51,7 +51,7 @@ def test_update_password(playwright: Playwright):
     assert response.ok
     on_forgot_password_page.back_to_login_button.is_visible()
     # Steps to get update password link from email
-    body = wait_for_email_and_read(playwright, temp_email_data["email_id"])
+    body = wait_for_email_and_read(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
     link = get_create_new_password_link_from_the_email_body(body)
     # Steps to change password and send the form
     page.goto(link)
@@ -69,5 +69,5 @@ def test_update_password(playwright: Playwright):
     expected_text = "Welcome back, testing!"
     expect(on_home_page.user_greeting_text).to_have_text(expected_text)
     # Delete all emails in the inbox
-    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"])
+    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
     assert response.ok
