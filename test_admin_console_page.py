@@ -34,13 +34,13 @@ def test_invite_new_owner(playwright: Playwright):
     - Log out user
     - Delete all received emails
     """
-    email = "user-7d53eb27-1e37-4b41-a8ee-50b5492a5f2b@mailslurp.biz"
     # Get authentication payload
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     # Get user credentials from the json file
     users_list = get_list_from_file("user_credentials.json", "users")
     support_data = get_value_by_key_from_list(users_list, "support")
+    temp_email_data = get_value_by_key_from_list(users_list, "temp_email")
     # Fill in payload with valid values
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
@@ -67,7 +67,7 @@ def test_invite_new_owner(playwright: Playwright):
     on_admin_console_page = on_home_page.sidebar.navigate_to_admin_console_page()
     on_admin_console_page.sidebar_companies_tab.click()
     on_admin_console_page.companies_tab.invite_new_owner_button.click()
-    on_admin_console_page.companies_tab.invite_new_owner_user_popup.email_input.fill(email)
+    on_admin_console_page.companies_tab.invite_new_owner_user_popup.email_input.fill(temp_email_data["email"])
     # Wait until request is finished and then continue
     with page.expect_response("**/api/account-service/auth-user/create-invite-owner") as resp_info:
         on_admin_console_page.companies_tab.invite_new_owner_user_popup.invite_button.click()
@@ -76,7 +76,7 @@ def test_invite_new_owner(playwright: Playwright):
     expected_text = "Success!"
     expect(on_admin_console_page.companies_tab.success_popup.title).to_have_text(expected_text)
     # Steps to get register link from email
-    body = wait_for_email_and_read(playwright, "7d53eb27-1e37-4b41-a8ee-50b5492a5f2b")
+    body = wait_for_email_and_read(playwright, temp_email_data["email_id"])
     link = get_register_link_from_the_email_body(body)
     # Steps to register a new owner
     page.goto(link)
@@ -97,9 +97,9 @@ def test_invite_new_owner(playwright: Playwright):
     expect(on_register_company_owner_page.success_page.title).to_have_text(expected_text)
     # Steps to log in with company owner user
     on_login_page = on_register_company_owner_page.success_page.navigate_to_login_page()
-    on_home_page = on_login_page.login_with_user_credentials(email, "EM#@YgnHy8")
+    on_home_page = on_login_page.login_with_user_credentials(temp_email_data["email"], "EM#@YgnHy8")
     expected_text = "Welcome back, autotestFirstName!"
     expect(on_home_page.user_greeting_text).to_have_text(expected_text)
     # Delete all emails in the inbox
-    response = delete_emails_in_inbox(playwright, "7d53eb27-1e37-4b41-a8ee-50b5492a5f2b")
+    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"])
     assert response.ok

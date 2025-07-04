@@ -3,7 +3,8 @@ from playwright.sync_api import Playwright, expect
 from pageObjects.loginPage import LoginPage
 from pageObjects.updatePasswordPage import UpdatePasswordPage
 from utilities.api.api_temp_email import wait_for_email_and_read, delete_emails_in_inbox
-from utilities.data_processing import get_create_new_password_link_from_the_email_body
+from utilities.data_processing import get_create_new_password_link_from_the_email_body, get_list_from_file, \
+    get_value_by_key_from_list
 
 
 def test_update_password(playwright: Playwright):
@@ -31,7 +32,8 @@ def test_update_password(playwright: Playwright):
     - Log out user
     - Delete all received emails
     """
-    email = "user-7d53eb27-1e37-4b41-a8ee-50b5492a5f2b@mailslurp.biz"
+    users_list = get_list_from_file("user_credentials.json", "users")
+    temp_email_data = get_value_by_key_from_list(users_list, "temp_email")
     # Set the browser
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
@@ -40,16 +42,16 @@ def test_update_password(playwright: Playwright):
     page.goto("https://studio.dev.plextera.com/")
     on_login_page = LoginPage(page)
     on_forgot_password_page = on_login_page.navigate_to_forgot_password_page()
-    on_forgot_password_page.email_input.fill(email)
+    on_forgot_password_page.email_input.fill(temp_email_data["email"])
     # Wait until request is finished and then continue
     with page.expect_response(
-            f"**/api/account-service/auth-user/forgot-password?email={email}") as resp_info:
+            f"**/api/account-service/auth-user/forgot-password?email={temp_email_data["email"]}") as resp_info:
         on_forgot_password_page.send_button.click()
     response = resp_info.value
     assert response.ok
     on_forgot_password_page.back_to_login_button.is_visible()
     # Steps to get update password link from email
-    body = wait_for_email_and_read(playwright, "7d53eb27-1e37-4b41-a8ee-50b5492a5f2b")
+    body = wait_for_email_and_read(playwright, temp_email_data["email_id"])
     link = get_create_new_password_link_from_the_email_body(body)
     # Steps to change password and send the form
     page.goto(link)
@@ -63,9 +65,9 @@ def test_update_password(playwright: Playwright):
     assert response.ok
     on_update_password_page.back_to_login_button.click()
     # Steps to log in with new password
-    on_home_page = on_login_page.login_with_user_credentials(email,"EM#@YgnHy9")
+    on_home_page = on_login_page.login_with_user_credentials(temp_email_data["email"],"EM#@YgnHy9")
     expected_text = "Welcome back, testing!"
     expect(on_home_page.user_greeting_text).to_have_text(expected_text)
     # Delete all emails in the inbox
-    response = delete_emails_in_inbox(playwright, "7d53eb27-1e37-4b41-a8ee-50b5492a5f2b")
+    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"])
     assert response.ok
