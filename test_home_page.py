@@ -3,15 +3,23 @@ from time import sleep
 
 from playwright.sync_api import Playwright, expect
 
+from data.constants import LOGIN_PAGE_TITLE, DOCUMENTS_INSIGHTS_TITLE
 from pageObjects.documentsInsightsPage import DocumentsInsightsPage
 from pageObjects.homePage import HomePage
 from pageObjects.loginPage import LoginPage
 from utilities.api.api_base import get_user_token
+from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
 
 
 def test_log_out(playwright: Playwright):
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright)
+    response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the browser
     browser = playwright.chromium.launch(headless=False)
@@ -35,12 +43,18 @@ def test_log_out(playwright: Playwright):
     on_home_page.sidebar.personal_cabinet_log_out_point.click()
     # Verification
     on_login_page = LoginPage(page)
-    expect(on_login_page.page_title).to_contain_text("Welcome to Plextera")
+    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
 
 
 def test_navigate_to_documents_insights_page(playwright: Playwright):
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright)
+    response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the browser
     browser = playwright.chromium.launch(headless=False)
@@ -59,10 +73,13 @@ def test_navigate_to_documents_insights_page(playwright: Playwright):
     # Test
     page.goto("https://studio.dev.plextera.com")
     on_home_page = HomePage(page)
-    on_home_page.sidebar.sidebar_bottom_section.hover()
-    on_home_page.sidebar.document_insights_point.click()
-    on_documents_insights_page = DocumentsInsightsPage(page)
-    on_hubs_page = on_documents_insights_page.navigate_to_hubs_page()
-    on_hubs_page.create_a_hub_button.click()
-    on_hubs_page.outline_based_type_card.click()
-    time.sleep(5)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    # Verification
+    expect(on_documents_insights_page.page_title).to_have_text(DOCUMENTS_INSIGHTS_TITLE)
+    expect(on_documents_insights_page.hubs_button).to_be_visible()
+    expect(on_documents_insights_page.reports_button).to_be_visible()
+    expect(on_documents_insights_page.processed_tab).to_be_visible()
+    expect(on_documents_insights_page.pending_tab).to_be_visible()
+    expect(on_documents_insights_page.queued_tab).to_be_visible()
+    expect(on_documents_insights_page.rejected_tab).to_be_visible()
+

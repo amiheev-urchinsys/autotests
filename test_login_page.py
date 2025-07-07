@@ -1,5 +1,8 @@
 import pytest
 from playwright.sync_api import expect
+
+from data.constants import HOME_PAGE_USER_TITLE, LOGIN_PAGE_TITLE, FORGOT_PASSWORD_PAGE_TITLE, \
+    ERROR_TEXT_INVALID_CREDENTIALS, LOGIN_PAGE_URL, DOMAIN_STAGE_URL
 from pageObjects.loginPage import LoginPage
 from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
 
@@ -27,17 +30,17 @@ def test_authenticate_user_with_email_and_password_role_support(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     support_user = get_value_by_key_from_list(user_credentials_list, "support")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_home_page = on_login_page.login_with_user_credentials(support_user["email"], support_user["password"])
     # Verification
-    expected_text = f"Welcome back, {support_user['name']}!"
-    expect(on_home_page.user_greeting_text).to_have_text(expected_text)
+    expect(on_home_page.user_greeting_text).to_have_text(HOME_PAGE_USER_TITLE + support_user['name'])
     # Post-conditions
     on_home_page.sidebar.sidebar_bottom_section.hover()
     on_home_page.sidebar.personal_cabinet_dropdown_menu.click()
     on_home_page.sidebar.personal_cabinet_log_out_point.click()
-    expect(on_login_page.page_title).to_contain_text("Welcome to Plextera")
+    # Verification
+    expect(on_login_page.page_title).to_have_text(LOGIN_PAGE_TITLE)
 
 
 @pytest.mark.login
@@ -63,17 +66,17 @@ def test_authenticate_user_with_email_and_password_role_owner(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     company_owner = get_value_by_key_from_list(user_credentials_list, "company_owner")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_home_page = on_login_page.login_with_user_credentials(company_owner["email"], company_owner["password"])
     # Verification
-    expected_text = f"Welcome back, {company_owner['name']}!"
-    expect(on_home_page.user_greeting_text).to_have_text(expected_text)
+    expect(on_home_page.user_greeting_text).to_have_text(HOME_PAGE_USER_TITLE + company_owner['name'])
     # Post-conditions
     on_home_page.sidebar.sidebar_bottom_section.hover()
     on_home_page.sidebar.personal_cabinet_dropdown_menu.click()
     on_home_page.sidebar.personal_cabinet_log_out_point.click()
-    expect(on_login_page.page_title).to_contain_text("Welcome to Plextera")
+    # Verification
+    expect(on_login_page.page_title).to_have_text(LOGIN_PAGE_TITLE)
 
 
 @pytest.mark.login
@@ -99,18 +102,18 @@ def test_authenticate_user_with_email_and_password_role_administrator(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     company_administrator = get_value_by_key_from_list(user_credentials_list, "company_administrator")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_home_page = on_login_page.login_with_user_credentials(company_administrator["email"],
                                                              company_administrator["password"])
     # Verification
-    expected_text = f"Welcome back, {company_administrator['name']}!"
-    expect(on_home_page.user_greeting_text).to_have_text(expected_text)
+    expect(on_home_page.user_greeting_text).to_have_text(HOME_PAGE_USER_TITLE + company_administrator['name'])
     # Post-conditions
     on_home_page.sidebar.sidebar_bottom_section.hover()
     on_home_page.sidebar.personal_cabinet_dropdown_menu.click()
     on_home_page.sidebar.personal_cabinet_log_out_point.click()
-    expect(on_login_page.page_title).to_contain_text("Welcome to Plextera")
+    # Verification
+    expect(on_login_page.page_title).to_have_text(LOGIN_PAGE_TITLE)
 
 
 @pytest.mark.login
@@ -136,17 +139,17 @@ def test_authenticate_user_with_email_and_password_role_company_user(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     company_user = get_value_by_key_from_list(user_credentials_list, "company_administrator")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_home_page = on_login_page.login_with_user_credentials(company_user["email"], company_user["password"])
     # Verification
-    expected_text = f"Welcome back, {company_user['name']}!"
-    expect(on_home_page.user_greeting_text).to_have_text(expected_text)
+    expect(on_home_page.user_greeting_text).to_have_text(HOME_PAGE_USER_TITLE + company_user['name'])
     # Post-conditions
     on_home_page.sidebar.sidebar_bottom_section.hover()
     on_home_page.sidebar.personal_cabinet_dropdown_menu.click()
     on_home_page.sidebar.personal_cabinet_log_out_point.click()
-    expect(on_login_page.page_title).to_contain_text("Welcome to Plextera")
+    # Verification
+    expect(on_login_page.page_title).to_have_text(LOGIN_PAGE_TITLE)
 
 
 @pytest.mark.login
@@ -163,11 +166,11 @@ def test_navigate_to_forgot_password_page(page):
     - The page title should contain the text 'Forgot password'.
     """
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_forgot_password_page = on_login_page.navigate_to_forgot_password_page()
     # Verification
-    expect(on_forgot_password_page.page_title).to_contain_text("Forgot password")
+    expect(on_forgot_password_page.page_title).to_have_text(FORGOT_PASSWORD_PAGE_TITLE)
 
 
 @pytest.mark.login
@@ -187,11 +190,11 @@ def test_error_message_is_displayed_with_invalid_email(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     invalid_credential = get_value_by_key_from_list(user_credentials_list, "invalid_email")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_login_page.login_with_user_credentials(invalid_credential["email"], invalid_credential["password"])
     # Verification
-    expect(on_login_page.error_message).to_contain_text("Invalid credentials")
+    expect(on_login_page.error_message).to_have_text(ERROR_TEXT_INVALID_CREDENTIALS)
 
 
 @pytest.mark.login
@@ -211,11 +214,11 @@ def test_error_message_is_displayed_with_invalid_password(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     invalid_credential = get_value_by_key_from_list(user_credentials_list, "invalid_password")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_login_page.login_with_user_credentials(invalid_credential["email"], invalid_credential["password"])
     # Verification
-    expect(on_login_page.error_message).to_contain_text("Invalid credentials")
+    expect(on_login_page.error_message).to_have_text(ERROR_TEXT_INVALID_CREDENTIALS)
 
 
 @pytest.mark.login
@@ -235,8 +238,8 @@ def test_error_message_is_displayed_with_invalid_credentials(page):
     user_credentials_list = get_list_from_file("user_credentials.json", "users")
     invalid_credential = get_value_by_key_from_list(user_credentials_list, "invalid_credentials")
     # Steps
-    page.goto("https://studio.dev.plextera.com/login")
+    page.goto(DOMAIN_STAGE_URL + LOGIN_PAGE_URL)
     on_login_page = LoginPage(page)
     on_login_page.login_with_user_credentials(invalid_credential["email"], invalid_credential["password"])
     # Verification
-    expect(on_login_page.error_message).to_contain_text("Invalid credentials")
+    expect(on_login_page.error_message).to_have_text(ERROR_TEXT_INVALID_CREDENTIALS)

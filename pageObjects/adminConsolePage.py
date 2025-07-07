@@ -1,8 +1,6 @@
 from playwright.sync_api import Page
 
 
-
-
 class AdminConsolePage:
 
     def __init__(self, page: Page):
@@ -35,10 +33,20 @@ class AdminConsolePage:
 
         def navigate_to_company_page(self):
             from pageObjects.companyPage import CompanyPage
-            self.company_row.click()
 
+            self.company_row.click()
             company_page = CompanyPage(self.page)
+
             return company_page
+
+        def send_invite_new_company_owner_form(self, email):
+            self.invite_new_owner_button.click()
+            self.invite_new_owner_user_popup.email_input.fill(email)
+            # Wait until request is finished and then continue
+            with self.page.expect_response("**/api/account-service/auth-user/create-invite-owner") as resp_info:
+                self.invite_new_owner_user_popup.invite_button.click()
+            response = resp_info.value
+            assert response.ok
 
         class FilterTab:
 

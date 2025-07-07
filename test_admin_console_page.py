@@ -66,13 +66,8 @@ def test_invite_new_owner(playwright: Playwright):
     on_home_page = HomePage(page)
     on_admin_console_page = on_home_page.sidebar.navigate_to_admin_console_page()
     on_admin_console_page.sidebar_companies_tab.click()
-    on_admin_console_page.companies_tab.invite_new_owner_button.click()
-    on_admin_console_page.companies_tab.invite_new_owner_user_popup.email_input.fill(temp_email_data["email"])
-    # Wait until request is finished and then continue
-    with page.expect_response("**/api/account-service/auth-user/create-invite-owner") as resp_info:
-        on_admin_console_page.companies_tab.invite_new_owner_user_popup.invite_button.click()
-    response = resp_info.value
-    assert response.ok
+    on_admin_console_page.send_invite_new_company_owner_form(temp_email_data["email"])
+    # Verification Success popup is present
     expected_text = "Success!"
     expect(on_admin_console_page.companies_tab.success_popup.title).to_have_text(expected_text)
     # Steps to get register link from email
@@ -81,20 +76,17 @@ def test_invite_new_owner(playwright: Playwright):
     # Steps to register a new owner
     page.goto(link)
     on_register_company_owner_page = RegisterCompanyOwnerPage(page)
-    on_register_company_owner_page.fill_in_the_registration_form("autotestFirstName",
+    on_register_company_owner_page.send_the_register_new_company_owner_form("autotestFirstName",
                                                                  "autotestLastName",
                                                                  "EM#@YgnHy8",
                                                                  "autotest_create_company")
-    # Wait until request is finished and then continue
-    with page.expect_response("**/api/account-service/auth-user/register-invite") as resp_info:
-        on_register_company_owner_page.register_button.click()
-    response = resp_info.value
-    assert response.ok
+    # Verification Success popup is present
     expected_text = "Success!"
     expect(on_register_company_owner_page.success_page.title).to_have_text(expected_text)
     # Steps to log in with company owner user
     on_login_page = on_register_company_owner_page.success_page.navigate_to_login_page()
-    on_home_page = on_login_page.login_with_user_credentials(temp_email_data["email"], "EM#@YgnHy8")
+    on_login_page.login_with_user_credentials(temp_email_data["email"], "EM#@YgnHy8")
+    # Verification that user is authenticated
     expected_text = "Welcome back, autotestFirstName!"
     expect(on_home_page.user_greeting_text).to_have_text(expected_text)
     # Delete all emails in the inbox

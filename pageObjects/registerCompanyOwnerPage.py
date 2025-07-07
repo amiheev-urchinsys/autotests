@@ -20,7 +20,7 @@ class RegisterCompanyOwnerPage:
         self.register_button = page.get_by_role("button", name="Register")
         self.success_page = RegisterCompanyOwnerPage.SuccessPage(page)
 
-    def fill_in_the_registration_form(self, first_name, last_name, password, company_name):
+    def send_the_register_new_company_owner_form(self, first_name, last_name, password, company_name):
         self.first_name_input.fill(first_name)
         self.last_name_input.fill(last_name)
         self.password_input.fill(password)
@@ -28,6 +28,11 @@ class RegisterCompanyOwnerPage:
         self.company_input.fill(company_name)
         self.privacy_policy_checkbox.check()
         self.terms_of_use_checkbox.check()
+        # Wait until request is finished and then continue
+        with self.page.expect_response("**/api/account-service/auth-user/register-invite") as resp_info:
+            self.register_button.click()
+        response = resp_info.value
+        assert response.ok
 
     class SuccessPage:
 

@@ -13,5 +13,6 @@ class HomePage(BasePage):
         super().__init__(page)
         self.user_greeting_text = page.locator('.page-content .greeting').first
         self.main_greeting_text = page.locator('.content .greeting')
+        self.description_text = page.locator('.content .info')
 
 

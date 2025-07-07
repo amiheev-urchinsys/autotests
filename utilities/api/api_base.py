@@ -1,6 +1,9 @@
+from http.client import responses
+
 from playwright.sync_api import Playwright
 
 stage = "https://api.dev.plextera.com"
+stage_ocrg = "https://ocrf.ocrgateway.com"
 
 
 def get_user_token(playwright: Playwright, payload):
@@ -18,6 +21,19 @@ def create_new_owner_user(playwright: Playwright, payload, token):
     response = api_request_context.post(
         "api/account-service/auth-user/create-invite-owner",
         data=payload,
+        headers={
+            "Context-type": "application/json",
+            "Authorization": "Bearer " + token
+        }
+    )
+
+    return response
+
+
+def delete_hub(playwright: Playwright, hub_id, token):
+    api_request_context = playwright.request.new_context(base_url=stage_ocrg)
+    response = api_request_context.delete(
+        f"/api/hubs/{hub_id}",
         headers={
             "Context-type": "application/json",
             "Authorization": "Bearer " + token

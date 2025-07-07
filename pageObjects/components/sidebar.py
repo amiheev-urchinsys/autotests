@@ -43,6 +43,10 @@ class Sidebar:
         from pageObjects.documentsInsightsPage import DocumentsInsightsPage
         self.sidebar_bottom_section.hover()
         self.toggle_button.click()
-        self.document_insights_point.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response("**/api/ocr/history?status=done&size=10&searchBy=NAME") as resp_info:
+            self.document_insights_point.click()
+        response = resp_info.value
+        assert response.ok
         documents_insights_page = DocumentsInsightsPage(self.page)
         return documents_insights_page
