@@ -69,12 +69,15 @@ class DocumentsInsightsPage(BasePage):
             assert response.ok
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
             with self.page.expect_response("**/api/hubs/create") as create_resp_info, \
-                    self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp:
+                    self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp, \
+                    self.page.expect_response("**/api/classification-classes/**") as smth_resp:
                 self.next_button.click()
             create_response = create_resp_info.value
             data_response = data_resp.value
+            smth = smth_resp.value
             assert create_response.ok
             assert data_response.ok
+            assert smth.ok
 
         class HubPage(BasePage):
 
@@ -88,12 +91,12 @@ class DocumentsInsightsPage(BasePage):
                 # General elements
                 self.gear_button = page.locator('.tab-header span[kind="greyOutlined"]')
                 self.edit_hub_name = page.locator('.page__header-left span[kind="greyOutlined"]')
+                self.save_button = page.get_by_role("button", name="Save")
 
                 # Outline based hub
                 self.add_new_field_button = page.get_by_role("button", name="+ Add new field")
                 self.drag_and_drop_files_button = page.locator(".direct-upload-dropzone")
                 self.browse_files_button = page.locator(".open-upload")
-                self.save_button = page.get_by_role("button", name="Save")
                 self.single_field_label_title = page.locator(".name_box")
                 self.list_group_field_label_title = page.locator('ul[role="tree"]')
                 self.single_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Single")
@@ -107,7 +110,7 @@ class DocumentsInsightsPage(BasePage):
                 self.upload_documents_button = page.get_by_role("button", name="Upload Documents")
                 self.add_data_points_button = page.get_by_role("button", name="ADD DATA POINTS")
                 self.import_data_points_in_json_format_button = page.get_by_role("button", name="import data points in json format")
-                self.data_points_tab = page.get_by_role("button", name="Data Points")
-                self.dictionary_tab = page.get_by_role("button", name="Dictionary")
-                self.classification_tab = page.get_by_role("button", name="Classification")
-
+                self.data_points_tab = page.locator("[id*='hubs_data-points-tab']")
+                self.dictionary_tab = page.locator("[id*='hubs_synonyms-tab']")
+                self.classification_tab = page.locator("[id*='hubs_classificatio-tab']")
+                self.field_name_input = page.locator('input[placeholder="Add field name"]')
