@@ -491,6 +491,7 @@ def test_create_a_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_page.dictionary_tab).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.classification_tab).to_be_visible()
     # Delete created hub
+    time.sleep(3)
     current_url = page.url
     hub_id = current_url.split("/hubs/")[1]
     response = delete_hub(playwright, hub_id, user_token)
@@ -552,10 +553,139 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page.hubs_page.create_value_based_hub()
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
-    with page.expect_response("**/api/hubs/**") as resp_info:
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     response = resp_info.value
     assert response.ok
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_create_group_type_field_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully create a Group-type field for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form and send it
+
+    Expected:
+    - A Group-type field block is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_create_list_type_field_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully create a List-type field for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form and send it
+
+    Expected:
+    - A List-type field block is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    time.sleep(3)
     # Delete created hub
     current_url = page.url
     hub_id = current_url.split("/hubs/")[1]

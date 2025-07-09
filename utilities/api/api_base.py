@@ -1,5 +1,6 @@
 from http.client import responses
 
+import requests
 from playwright.sync_api import Playwright
 
 stage = "https://api.dev.plextera.com"

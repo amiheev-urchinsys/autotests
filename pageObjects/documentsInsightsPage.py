@@ -92,6 +92,9 @@ class DocumentsInsightsPage(BasePage):
                 self.gear_button = page.locator('.tab-header span[kind="greyOutlined"]')
                 self.edit_hub_name = page.locator('.page__header-left span[kind="greyOutlined"]')
                 self.save_button = page.get_by_role("button", name="Save")
+                self.single_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Single")
+                self.group_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Group")
+                self.list_radiobutton = page.locator(".radio-button-label .text").filter(has_text="List")
 
                 # Outline based hub
                 self.add_new_field_button = page.get_by_role("button", name="+ Add new field")
@@ -99,9 +102,6 @@ class DocumentsInsightsPage(BasePage):
                 self.browse_files_button = page.locator(".open-upload")
                 self.single_field_label_title = page.locator(".name_box")
                 self.list_group_field_label_title = page.locator('ul[role="tree"]')
-                self.single_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Single")
-                self.group_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Group")
-                self.list_radiobutton = page.locator(".radio-button-label .text").filter(has_text="List")
                 self.nested_add_new_field = page.locator('//*[@id="scroll"]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/div/div/ul/div/li/div/div[2]/div/div[2]/span[3]')
                 self.arrow_button = page.locator('.chevron.undefined')
                 self.nested_group_label = page.locator(".MuiTreeItem-group.MuiCollapse-entered")
@@ -114,3 +114,4 @@ class DocumentsInsightsPage(BasePage):
                 self.dictionary_tab = page.locator("[id*='hubs_synonyms-tab']")
                 self.classification_tab = page.locator("[id*='hubs_classificatio-tab']")
                 self.field_name_input = page.locator('input[placeholder="Add field name"]')
+                self.searchable_checkbox = page.locator('span[class="type"]').filter(has_text="Searchable")
