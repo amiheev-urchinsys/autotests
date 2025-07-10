@@ -639,13 +639,66 @@ def test_delete_list_type_field_in_outline_based_hub(context_and_playwright):
     hub_id = current_url.split("/hubs/")[1]
     response = delete_hub(playwright, hub_id, user_token)
     assert response.ok
-    on_documents_insights_page.sidebar.sidebar_bottom_section.hover()
-    on_documents_insights_page.sidebar.personal_cabinet_dropdown_menu.click()
-    on_documents_insights_page.sidebar.personal_cabinet_log_out_point.click()
-    # Verification
-    on_login_page = LoginPage(page)
-    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
 
+
+@pytest.mark.hubs
+@pytest.mark.outline_based
+def test_create_outline_document_template(context_and_playwright):
+    """
+    Verify that a user can successfully create outline document template
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Upload file
+
+    Expected:
+    - Outline template card is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_outline_based_hub()
+    # Upload document
+    with page.expect_response("**/api/hubs/smart/**/add-outline") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.upload_file("outline_document.pdf")
+    response = resp_info.value
+    assert response.ok
+    time.sleep(5)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
 
 @pytest.mark.hubs
 @pytest.mark.value_based

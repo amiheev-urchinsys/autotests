@@ -100,6 +100,8 @@ class DocumentsInsightsPage(BasePage):
                 self.delete_button = page.get_by_role("button", name="Delete")
                 self.delete_group_type_field_icon = page.locator(
                     '(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
+                self.file_input = page.locator("input[type='file']")
+
 
                 # Outline based hub
                 self.add_new_field_button = page.get_by_role("button", name="+ Add new field")
@@ -111,7 +113,7 @@ class DocumentsInsightsPage(BasePage):
                 self.arrow_button = page.locator('.chevron.undefined')
                 self.nested_group_label = page.locator(".MuiTreeItem-group.MuiCollapse-entered")
                 self.delete_single_type_field_icon_outline = page.locator('(//div[@class="rigth_box"]//span[@kind="greyOutlined"])[2]')
-
+                self.meatball_menu = page.locator(".open-hub-actions")
 
                 # Value based hub
                 self.upload_documents_button = page.get_by_role("button", name="Upload Documents")
@@ -125,3 +127,6 @@ class DocumentsInsightsPage(BasePage):
                 self.searchable_checkbox = page.locator('span[class="type"]').filter(has_text="Searchable")
                 self.delete_single_type_field_icon = page.locator('span[id*="hubs_delete-data-point"]')
                 self.delete_group_type_field_icon = page.locator('(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
+
+            def upload_file(self, document):
+                self.page.set_input_files(self.file_input, "data/" + document + "")
