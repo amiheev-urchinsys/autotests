@@ -95,6 +95,11 @@ class DocumentsInsightsPage(BasePage):
                 self.single_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Single")
                 self.group_radiobutton = page.locator(".radio-button-label .text").filter(has_text="Group")
                 self.list_radiobutton = page.locator(".radio-button-label .text").filter(has_text="List")
+                self.arrow_button = page.locator('.chevron.undefined')
+                self.nested_group_label = page.locator(".MuiTreeItem-group.MuiCollapse-entered")
+                self.delete_button = page.get_by_role("button", name="Delete")
+                self.delete_group_type_field_icon = page.locator(
+                    '(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
 
                 # Outline based hub
                 self.add_new_field_button = page.get_by_role("button", name="+ Add new field")
@@ -105,6 +110,8 @@ class DocumentsInsightsPage(BasePage):
                 self.nested_add_new_field = page.locator('//*[@id="scroll"]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/div/div/ul/div/li/div/div[2]/div/div[2]/span[3]')
                 self.arrow_button = page.locator('.chevron.undefined')
                 self.nested_group_label = page.locator(".MuiTreeItem-group.MuiCollapse-entered")
+                self.delete_single_type_field_icon_outline = page.locator('(//div[@class="rigth_box"]//span[@kind="greyOutlined"])[2]')
+
 
                 # Value based hub
                 self.upload_documents_button = page.get_by_role("button", name="Upload Documents")
@@ -112,6 +119,9 @@ class DocumentsInsightsPage(BasePage):
                 self.import_data_points_in_json_format_button = page.get_by_role("button", name="import data points in json format")
                 self.data_points_tab = page.locator("[id*='hubs_data-points-tab']")
                 self.dictionary_tab = page.locator("[id*='hubs_synonyms-tab']")
+                self.nested_value_add_new_field = page.locator('//*[@id="scroll"]/div/div[2]/div[2]/div/div/div/ul/div/div/ul/li/div/div[2]/div/div[2]/span[3]')
                 self.classification_tab = page.locator("[id*='hubs_classificatio-tab']")
                 self.field_name_input = page.locator('input[placeholder="Add field name"]')
                 self.searchable_checkbox = page.locator('span[class="type"]').filter(has_text="Searchable")
+                self.delete_single_type_field_icon = page.locator('span[id*="hubs_delete-data-point"]')
+                self.delete_group_type_field_icon = page.locator('(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')

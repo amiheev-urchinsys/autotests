@@ -27,7 +27,6 @@ def test_create_an_outline_based_hub(context_and_playwright):
 
     Post-conditions:
     - Get hub id and send 'Delete' request
-    - Log out user from the project
     """
     context, playwright = context_and_playwright
     page = context.new_page()
@@ -67,13 +66,6 @@ def test_create_an_outline_based_hub(context_and_playwright):
     hub_id = current_url.split("/hubs/")[1]
     response = delete_hub(playwright, hub_id, user_token)
     assert response.ok
-    # Logout
-    on_documents_insights_page.sidebar.sidebar_bottom_section.hover()
-    on_documents_insights_page.sidebar.personal_cabinet_dropdown_menu.click()
-    on_documents_insights_page.sidebar.personal_cabinet_log_out_point.click()
-    # Verification
-    on_login_page = LoginPage(page)
-    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
 
 
 @pytest.mark.hubs
@@ -435,6 +427,227 @@ def test_create_single_type_field_nested_inside_group_type_field_in_outline_base
 
 
 @pytest.mark.hubs
+@pytest.mark.outline_based
+def test_delete_single_type_field_in_outline_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a Single-type field for the outline based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form and send it
+    - Click the Delete button on the Single-type block
+
+    Expected:
+    - A Single-type field block is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_outline_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_new_field_button.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.single_field_label_title).to_be_visible()
+    on_documents_insights_page.hubs_page.hub_page.delete_single_type_field_icon_outline.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+    on_documents_insights_page.sidebar.sidebar_bottom_section.hover()
+    on_documents_insights_page.sidebar.personal_cabinet_dropdown_menu.click()
+    on_documents_insights_page.sidebar.personal_cabinet_log_out_point.click()
+    # Verification
+    on_login_page = LoginPage(page)
+    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
+
+
+@pytest.mark.hubs
+@pytest.mark.outline_based
+def test_delete_group_type_field_in_outline_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a Group-type field for the outline based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form, select Group type and send it
+    - Click the Delete button on the Group-type block
+
+    Expected:
+    - A Group-type field block is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_outline_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_new_field_button.click()
+    on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.list_group_field_label_title).to_be_visible()
+    on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+    on_documents_insights_page.sidebar.sidebar_bottom_section.hover()
+    on_documents_insights_page.sidebar.personal_cabinet_dropdown_menu.click()
+    on_documents_insights_page.sidebar.personal_cabinet_log_out_point.click()
+    # Verification
+    on_login_page = LoginPage(page)
+    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
+
+
+@pytest.mark.hubs
+@pytest.mark.outline_based
+def test_delete_list_type_field_in_outline_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a List-type field for the outline based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form, select List type and send it
+    - Click the Delete button on the Group-type block
+
+    Expected:
+    - A List-type field block is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_outline_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_new_field_button.click()
+    on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.list_group_field_label_title).to_be_visible()
+    on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+    on_documents_insights_page.sidebar.sidebar_bottom_section.hover()
+    on_documents_insights_page.sidebar.personal_cabinet_dropdown_menu.click()
+    on_documents_insights_page.sidebar.personal_cabinet_log_out_point.click()
+    # Verification
+    on_login_page = LoginPage(page)
+    expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
+
+
+@pytest.mark.hubs
 @pytest.mark.value_based
 def test_create_a_value_based_hub(context_and_playwright):
     """
@@ -576,7 +789,7 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     - Send login request and set cookie
     - Open home page and navigate to the 'Documents Insights' page
     - Open, fill in and send the 'Create a hub' form
-    - Open the 'Create a new field' form and send it
+    - Open the 'Create a new field' form select Group type, enter name and send it
 
     Expected:
     - A Group-type field block is displayed
@@ -640,7 +853,7 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     - Send login request and set cookie
     - Open home page and navigate to the 'Documents Insights' page
     - Open, fill in and send the 'Create a hub' form
-    - Open the 'Create a new field' form and send it
+    - Open the 'Create a new field' form select List type, enter name and send it
 
     Expected:
     - A List-type field block is displayed
@@ -685,6 +898,292 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     response = resp_info.value
     response2 = resp2_info.value
     assert response.ok, response2.ok
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hub(context_and_playwright):
+    """
+     Verify that a user can successfully create a Group-type field nested inside the List-type field for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form select List type, enter name and send it
+    - Click + on the list-type field and create a group-type field
+    - Click arrow button to reveal the nested group-type field
+
+    Expected:
+    - A List-type field with nested Group-type filed is displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    on_documents_insights_page.hubs_page.hub_page.nested_value_add_new_field.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field nested1")
+    on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**/add-sub-field") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    on_documents_insights_page.hubs_page.hub_page.arrow_button.click()
+    expect(on_documents_insights_page.hubs_page.hub_page.nested_group_label).to_be_visible()
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_delete_single_type_field_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a Single-type field for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form and send it
+    - Click the Delete button on the Single-type field
+
+    Expected:
+    - A Single-type field block is not displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    assert response.ok
+    on_documents_insights_page.hubs_page.hub_page.delete_single_type_field_icon.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_delete_group_type_field_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a Group-type field on the value based hub page
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form select Group type, enter name and send it
+    - Click the Delete button on the Group-type field
+
+    Expected:
+    - A Group-type field block is not displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
+    time.sleep(3)
+    # Delete created hub
+    current_url = page.url
+    hub_id = current_url.split("/hubs/")[1]
+    response = delete_hub(playwright, hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_delete_list_type_field_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully delete a List-type field for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form select List type, enter name and send it
+    - Click the Delete button on the Group-type field
+
+    Expected:
+    - A List-type field block is not displayed
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    - Log out user from the project
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    on_documents_insights_page.hubs_page.create_value_based_hub()
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill("testing field 1")
+    on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields") as resp_info, \
+            page.expect_response("**/api/hubs/**?include=short_outline") as resp2_info:
+        on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    response = resp_info.value
+    response2 = resp2_info.value
+    assert response.ok, response2.ok
+    on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
+    with page.expect_response("**/api/hubs/**/abstract-fields/**") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.delete_button.click()
+    response = resp_info.value
+    assert response.ok
+    expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
     time.sleep(3)
     # Delete created hub
     current_url = page.url
