@@ -58,6 +58,8 @@ class DocumentsInsightsPage(BasePage):
             data_response = data_resp.value
             assert create_response.ok
             assert data_response.ok
+            outline_hub_id = create_response.json()["id"]
+            return outline_hub_id
 
         def create_value_based_hub(self):
             self.create_a_hub_button.click()
@@ -78,6 +80,8 @@ class DocumentsInsightsPage(BasePage):
             assert create_response.ok
             assert data_response.ok
             assert smth.ok
+            value_hub_id = create_response.json()["id"]
+            return value_hub_id
 
         class HubPage(BasePage):
 
@@ -114,6 +118,15 @@ class DocumentsInsightsPage(BasePage):
                 self.nested_group_label = page.locator(".MuiTreeItem-group.MuiCollapse-entered")
                 self.delete_single_type_field_icon_outline = page.locator('(//div[@class="rigth_box"]//span[@kind="greyOutlined"])[2]')
                 self.meatball_menu = page.locator(".open-hub-actions")
+                self.no_fields_text = page.locator(".field_text")
+                self.fields_list_text_title = page.locator(".tab-content .name")
+                self.outline_template_name = page.locator(".box_name")
+                self.outline_template_switch = page.locator("//div[contains(@class, 'toggle-enable')]")
+                self.outline_template_meatball_menu = page.locator("//div[contains(@class, 'open-hub-actions')]")
+                self.outline_template_footer = page.locator(".box_container footer")
+                self.outline_template_meatball_menu_rename_point = page.locator("//div[contains(@class, 'rename-hub')]")
+                self.rename_popup_input = page.locator('input[placeholder="Outline name"]')
+                self.rename_popup_cancel_button = page.get_by_role("button", name="Cancel")
 
                 # Value based hub
                 self.upload_documents_button = page.get_by_role("button", name="Upload Documents")
@@ -127,6 +140,9 @@ class DocumentsInsightsPage(BasePage):
                 self.searchable_checkbox = page.locator('span[class="type"]').filter(has_text="Searchable")
                 self.delete_single_type_field_icon = page.locator('span[id*="hubs_delete-data-point"]')
                 self.delete_group_type_field_icon = page.locator('(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
+                self.no_data_points_title_text = page.locator(".tab-content h4")
+                self.no_data_points_description_text = page.locator(".tab-content p")
+                self.value_single_
 
             def upload_file(self, document):
-                self.page.set_input_files(self.file_input, "data/" + document + "")
+                self.file_input.set_input_files("data/" + document + "")

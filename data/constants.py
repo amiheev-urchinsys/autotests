@@ -48,6 +48,12 @@ HUBS_PAGE_DELETE_POPUP_DESCRIPTION_PART_ONE = "Are you sure you want to delete h
 HUBS_PAGE_DELETE_POPUP_DESCRIPTION_PART_TWO = " and all related channels and automation?"
 HUBS_PAGE_RENAME_POPUP_TITLE = "Rename"
 
+# Hub
+HUB_PAGE_OUTLINE_NO_FIELDS_TEXT = "There aren't any fields yet."
+HUB_PAGE_OUTLINE_TEMPLATE_NAME = "Outline 1"
+HUB_PAGE_VALUE_NO_FIELDS_TITLE_TEXT = "No data points yet"
+HUB_PAGE_VALUE_FIELDS_TITLE_TEXT = "Data Points"
+
 
 # SIDES page
 
