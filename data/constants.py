@@ -47,6 +47,7 @@ HUBS_PAGE_LOADING_POPUP_DESCRIPTION = "Please wait a moment..."
 HUBS_PAGE_DELETE_POPUP_DESCRIPTION_PART_ONE = "Are you sure you want to delete hub "
 HUBS_PAGE_DELETE_POPUP_DESCRIPTION_PART_TWO = " and all related channels and automation?"
 HUBS_PAGE_RENAME_POPUP_TITLE = "Rename"
+HUBS_PAGE_TAGS_POPUP_TITLE = "Tags for hub"
 
 # Hub
 HUB_PAGE_OUTLINE_NO_FIELDS_TEXT = "There aren't any fields yet."

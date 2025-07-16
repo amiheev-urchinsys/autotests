@@ -40,9 +40,22 @@ class DocumentsInsightsPage(BasePage):
             self.loading_popup_description = page.locator('.text')
             self.hub_page = DocumentsInsightsPage.HubsPage.HubPage(page)
             self.value_based_type_card = page.locator('div[class="menu"] div[class="menu-item"]:nth-child(2)')
-
+            self.empty_state_text = page.locator("#scroll div:nth-child(2) span")
+            self.hub_card = page.locator("//div[contains(@class, 'hub-item')]")
+            self.hub_card_meatball_menu = page.locator("//div[contains(@class, 'open-hub-actions')]")
+            self.hub_card_meatball_menu_delete_point = page.locator("//div[contains(@class, 'remove-hub')]")
+            self.hub_card_switch = page.locator("//div[contains(@class, 'toggle-enable')]")
+            self.hub_card_meatball_menu_view_details_point = page.locator("//div[contains(@id, 'hubs_menu-view-details')]")
+            self.hub_card_meatball_menu_rename_point = page.locator("//div[contains(@class, 'rename-hub')]")
+            self.hub_card_title = page.locator("(//div[contains(@class, 'hub-item')] //span[@title])[2]")
+            self.hub_card_meatball_menu_tags_point = page.locator("//div[contains(@id, 'hubs_menu-tags')]")
 
         def create_outline_based_hub(self):
+            """
+            Creates an outline based hub and returns hub id and name
+
+            :return: hub ID and hub name
+            """
             self.create_a_hub_button.click()
             self.outline_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
@@ -54,14 +67,18 @@ class DocumentsInsightsPage(BasePage):
             with self.page.expect_response("**/api/hubs/create") as create_resp_info, \
                     self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp:
                 self.next_button.click()
-            create_response = create_resp_info.value
-            data_response = data_resp.value
-            assert create_response.ok
-            assert data_response.ok
-            outline_hub_id = create_response.json()["id"]
-            return outline_hub_id
+            assert create_resp_info.value.ok
+            assert data_resp.value.ok
+            outline_hub_id = create_resp_info.value.json()["id"]
+            outline_hub_name = create_resp_info.value.json()["name"]
+            return outline_hub_id, outline_hub_name
 
         def create_value_based_hub(self):
+            """
+            Creates an value based hub and returns hub id and name
+
+            :return: hub ID and hub name
+            """
             self.create_a_hub_button.click()
             self.value_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
@@ -74,14 +91,12 @@ class DocumentsInsightsPage(BasePage):
                     self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp, \
                     self.page.expect_response("**/api/classification-classes/**") as smth_resp:
                 self.next_button.click()
-            create_response = create_resp_info.value
-            data_response = data_resp.value
-            smth = smth_resp.value
-            assert create_response.ok
-            assert data_response.ok
-            assert smth.ok
-            value_hub_id = create_response.json()["id"]
-            return value_hub_id
+            assert create_resp_info.value.ok
+            assert data_resp.value.ok
+            assert smth_resp.value.ok
+            value_hub_id = create_resp_info.value.json()["id"]
+            value_hub_name = create_resp_info.value.json()["name"]
+            return value_hub_id, value_hub_name
 
         class HubPage(BasePage):
 
@@ -105,7 +120,7 @@ class DocumentsInsightsPage(BasePage):
                 self.delete_group_type_field_icon = page.locator(
                     '(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
                 self.file_input = page.locator("input[type='file']")
-
+                self.navigate_to_hubs_page_button = page.locator(".page__header-left div span")
 
                 # Outline based hub
                 self.add_new_field_button = page.get_by_role("button", name="+ Add new field")
@@ -127,6 +142,8 @@ class DocumentsInsightsPage(BasePage):
                 self.outline_template_meatball_menu_rename_point = page.locator("//div[contains(@class, 'rename-hub')]")
                 self.rename_popup_input = page.locator('input[placeholder="Outline name"]')
                 self.rename_popup_cancel_button = page.get_by_role("button", name="Cancel")
+                self.outline_template_meatball_menu_delete_point = page.locator("//div[contains(@class, 'remove-hub')]")
+                self.outline_template_card = page.locator(".box_container")
 
                 # Value based hub
                 self.upload_documents_button = page.get_by_role("button", name="Upload Documents")
@@ -137,12 +154,25 @@ class DocumentsInsightsPage(BasePage):
                 self.nested_value_add_new_field = page.locator('//*[@id="scroll"]/div/div[2]/div[2]/div/div/div/ul/div/div/ul/li/div/div[2]/div/div[2]/span[3]')
                 self.classification_tab = page.locator("[id*='hubs_classificatio-tab']")
                 self.field_name_input = page.locator('input[placeholder="Add field name"]')
-                self.searchable_checkbox = page.locator('span[class="type"]').filter(has_text="Searchable")
+                self.searchable_checkbox = page.locator('(//div[@class="option"] //span[@class="MuiIconButton-label"])[1] /input')
                 self.delete_single_type_field_icon = page.locator('span[id*="hubs_delete-data-point"]')
                 self.delete_group_type_field_icon = page.locator('(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
                 self.no_data_points_title_text = page.locator(".tab-content h4")
                 self.no_data_points_description_text = page.locator(".tab-content p")
-                self.value_single_
+
 
             def upload_file(self, document):
+                """
+                Uploads a pdf file
+
+                :param document: Document name with its type, example 'document.pdf'
+                """
                 self.file_input.set_input_files("data/" + document + "")
+
+            def click_the_edit_button_on_the_field_label(self, field_name):
+                """
+                Click the Edit button on the field label
+
+                :param field_name: Name of the field
+                """
+                self.page.locator(f"//span[contains(@id, 'hubs_edit-data-point_{field_name}')]").click()
