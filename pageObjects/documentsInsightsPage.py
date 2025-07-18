@@ -1,7 +1,8 @@
 from playwright.sync_api import Page
 
 from data.constants import DOCUMENTS_INSIGHTS_PROCESSED_TAB_TITLE, DOCUMENTS_INSIGHTS_PENDING_TAB_TITLE, \
-    DOCUMENTS_INSIGHTS_QUEUED_TAB_TITLE, DOCUMENTS_INSIGHTS_REJECTED_TITLE
+    DOCUMENTS_INSIGHTS_QUEUED_TAB_TITLE, DOCUMENTS_INSIGHTS_REJECTED_TITLE, HUB_PAGE_VALUE_SINGLE_FIELD_NAME, \
+    HUB_PAGE_VALUE_GROUP_FIELD_NAME, HUB_PAGE_VALUE_LIST_FIELD_NAME, HUB_PAGE_VALUE_NESTED_FIELD_NAME
 from pageObjects.basePage import BasePage
 
 
@@ -159,6 +160,17 @@ class DocumentsInsightsPage(BasePage):
                 self.delete_group_type_field_icon = page.locator('(//div[@class="MuiTreeItem-content"]//span[@kind="greyOutlined"])[2]')
                 self.no_data_points_title_text = page.locator(".tab-content h4")
                 self.no_data_points_description_text = page.locator(".tab-content p")
+                self.added_field = page.locator('ul[role="tree"] .MuiTreeItem-content')
+                self.single_field = page.locator('ul[role="tree"] .MuiTreeItem-content').filter(has_text=HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
+                self.group_field = page.locator('ul[role="tree"] .MuiTreeItem-content').filter(has_text=HUB_PAGE_VALUE_GROUP_FIELD_NAME)
+                self.list_field = page.locator('ul[role="tree"] .MuiTreeItem-content').filter(has_text=HUB_PAGE_VALUE_LIST_FIELD_NAME)
+                self.nested_field = page.locator('ul[role="tree"] .MuiTreeItem-content').filter(has_text=HUB_PAGE_VALUE_NESTED_FIELD_NAME)
+                self.required_checkbox = page.locator('(//div[@class="option"] //span[@class="MuiIconButton-label"])[2] /input')
+                self.advanced_section = page.locator('.selection-strategy')
+                self.kve_checkbox = page.locator('(//span[@class="MuiIconButton-label"])[3] /input')
+                self.qna_checkbox = page.locator('(//span[@class="MuiIconButton-label"])[4] /input')
+                self.script_checkbox = page.locator('(//span[@class="MuiIconButton-label"])[5] /input')
+                self.qna_input = page.locator("input[name='question']")
 
 
             def upload_file(self, document):
