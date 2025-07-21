@@ -11,9 +11,9 @@ from utilities.data_processing import get_list_from_file, get_value_by_key_from_
 
 @pytest.mark.hubs
 @pytest.mark.outline_based
-def test_create_an_outline_based_hub(context_and_playwright):
+def test_create_an_outline_based_hub_only_required_fields(context_and_playwright):
     """
-    Verify that a user can successfully create an outline based hub
+    Verify that a user can successfully create an outline based only required fields populated
 
     Steps:
     - Load user credentials and payload from the JSON file.
@@ -54,7 +54,7 @@ def test_create_an_outline_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id = on_documents_insights_page.hubs_page.create_outline_based_hub()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -72,7 +72,68 @@ def test_create_an_outline_based_hub(context_and_playwright):
 
 @pytest.mark.hubs
 @pytest.mark.outline_based
-def test_disable_an_outline_based_hub(context_and_playwright):
+def test_create_an_outline_based_hub_all_fields(context_and_playwright):
+    """
+    Verify that a user can successfully create an outline based hub with all fields populated
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Navigate to hubs page
+
+    Expected:
+    - Outline hub card is displayed on the Hubs page
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get test data from files
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set token in cookies
+    context.add_cookies([{
+        "name": "access-token-plextera",
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Continue as before
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(True)
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.browse_files_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.edit_hub_name).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
+    with page.expect_response("**/api/hubs/page?sortBy=name") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.navigate_to_hubs_page_button.click()
+    assert resp_info.value.ok
+    expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
+    # Delete created hub
+    response = delete_hub(playwright, outline_hub_id, user_token)
+    assert response.ok
+
+@pytest.mark.hubs
+@pytest.mark.outline_based
+def test_disable_an_outline_based_hub_only_required_fields(context_and_playwright):
     """
     Verify that a user can successfully disable an outline based hub
 
@@ -116,7 +177,7 @@ def test_disable_an_outline_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id = on_documents_insights_page.hubs_page.create_outline_based_hub()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -182,7 +243,7 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id = on_documents_insights_page.hubs_page.create_outline_based_hub()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -249,7 +310,7 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id = on_documents_insights_page.hubs_page.create_outline_based_hub()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -319,7 +380,7 @@ def test_rename_an_outline_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id = on_documents_insights_page.hubs_page.create_outline_based_hub()
+    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -351,7 +412,7 @@ def test_rename_an_outline_hub(context_and_playwright):
 
 @pytest.mark.hubs
 @pytest.mark.value_based
-def test_create_a_value_based_hub(context_and_playwright):
+def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     """
     Verify that a user can successfully create a value based hub
 
@@ -395,7 +456,7 @@ def test_create_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id = on_documents_insights_page.hubs_page.create_value_based_hub()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -415,6 +476,147 @@ def test_create_a_value_based_hub(context_and_playwright):
     # Delete created hub
     response = delete_hub(playwright, value_hub_id, user_token)
     assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_and_playwright):
+    """
+    Verify that a user can successfully create a value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+
+    Expected:
+    - Elements as 'add new field button', 'drag and drop', 'browse files', 'edit hub name', 'settings menu' and three tabs should be
+    visible
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get test data from files
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(True, False)
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.edit_hub_name).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.add_data_points_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.data_points_tab).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.dictionary_tab).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.classification_tab).to_be_visible()
+    # Navigate to Hubs page
+    with page.expect_response("**/api/hubs/page?sortBy=name") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.navigate_to_hubs_page_button.click()
+    assert resp_info.value.ok
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
+    # Delete created hub
+    time.sleep(3)
+    response = delete_hub(playwright, value_hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_and_playwright):
+    """
+    Verify that a user can successfully create a value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+
+    Expected:
+    - Elements as 'add new field button', 'drag and drop', 'browse files', 'edit hub name', 'settings menu' and three tabs should be
+    visible
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get test data from files
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(True, True)
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.edit_hub_name).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.add_data_points_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.data_points_tab).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.dictionary_tab).not_to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_page.classification_tab).to_be_visible()
+    # Navigate to Hubs page
+    with page.expect_response("**/api/hubs/page?sortBy=name") as resp_info:
+        on_documents_insights_page.hubs_page.hub_page.navigate_to_hubs_page_button.click()
+    assert resp_info.value.ok
+    # Verification
+    expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
+    expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
+    # Delete created hub
+    time.sleep(3)
+    response = delete_hub(playwright, value_hub_id, user_token)
+    assert response.ok
+
+
+
 
 
 @pytest.mark.hubs
@@ -461,7 +663,7 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id = on_documents_insights_page.hubs_page.create_value_based_hub()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -532,7 +734,7 @@ def test_rename_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id = on_documents_insights_page.hubs_page.create_value_based_hub()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -616,7 +818,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, value_hub_name = on_documents_insights_page.hubs_page.create_value_based_hub()
+    value_hub_id, value_hub_name = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -703,7 +905,7 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id = on_documents_insights_page.hubs_page.create_value_based_hub()
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()

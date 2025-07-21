@@ -1,3 +1,5 @@
+import time
+
 from playwright.sync_api import Page
 
 from data.constants import DOCUMENTS_INSIGHTS_PROCESSED_TAB_TITLE, DOCUMENTS_INSIGHTS_PENDING_TAB_TITLE, \
@@ -35,12 +37,9 @@ class DocumentsInsightsPage(BasePage):
             super().__init__(page)
             self.page_title = page.locator('div[class="page-content"] span[class="name"]')
             self.create_a_hub_button = page.get_by_role("button", name="Create A Hub")
-            self.outline_based_type_card = page.locator('div[class="menu"] div[class="menu-item"]:nth-child(1)')
-            self.next_button = page.get_by_role("button", name="Next")
             self.loading_popup_title = page.locator('.loading')
             self.loading_popup_description = page.locator('.text')
             self.hub_page = DocumentsInsightsPage.HubsPage.HubPage(page)
-            self.value_based_type_card = page.locator('div[class="menu"] div[class="menu-item"]:nth-child(2)')
             self.empty_state_text = page.locator("#scroll div:nth-child(2) span")
             self.hub_card = page.locator("//div[contains(@class, 'hub-item')]")
             self.hub_card_meatball_menu = page.locator("//div[contains(@class, 'open-hub-actions')]")
@@ -50,48 +49,60 @@ class DocumentsInsightsPage(BasePage):
             self.hub_card_meatball_menu_rename_point = page.locator("//div[contains(@class, 'rename-hub')]")
             self.hub_card_title = page.locator("(//div[contains(@class, 'hub-item')] //span[@title])[2]")
             self.hub_card_meatball_menu_tags_point = page.locator("//div[contains(@id, 'hubs_menu-tags')]")
+            self.hub_card_description = page.locator('//div[contains(@id,"clamped-content-description-for-")]')
 
-        def create_outline_based_hub(self):
+        def create_outline_based_hub(self, all_field_populated: bool = False):
             """
             Creates an outline based hub and returns hub id and name
+            If received value is 'true', then all fields will be populated, else only required fields will be populated.
 
+            :param all_field_populated: Can be True or False. Default value is False
             :return: hub ID and hub name
             """
             self.create_a_hub_button.click()
-            self.outline_based_type_card.click()
+            self.popups.create_hub_outline_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
             with self.page.expect_response("**/api/hubs/default-name") as resp_info:
-                self.next_button.click()
+                self.popups.next_button.click()
             response = resp_info.value
             assert response.ok
+            if all_field_populated:
+                self.popups.create_hub_description_input.fill("description")
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
             with self.page.expect_response("**/api/hubs/create") as create_resp_info, \
                     self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp:
-                self.next_button.click()
+                self.popups.next_button.click()
             assert create_resp_info.value.ok
             assert data_resp.value.ok
             outline_hub_id = create_resp_info.value.json()["id"]
             outline_hub_name = create_resp_info.value.json()["name"]
             return outline_hub_id, outline_hub_name
 
-        def create_value_based_hub(self):
+        def create_value_based_hub(self, all_field_populated: bool = False, extractor_type: bool = False):
             """
-            Creates an value based hub and returns hub id and name
+            Creates a value based hub and returns hub id and name
+            If received value is 'true', then all fields will be populated, else only required fields will be populated.
 
+            :param all_field_populated: Can be True or False. Default value is False
             :return: hub ID and hub name
             """
             self.create_a_hub_button.click()
-            self.value_based_type_card.click()
+            self.popups.create_hub_value_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
             with self.page.expect_response("**/api/hubs/default-name") as resp_info:
-                self.next_button.click()
+                self.popups.next_button.click()
             response = resp_info.value
             assert response.ok
+            if all_field_populated:
+                self.popups.create_hub_description_input.fill("description")
+                self.popups.create_hub_additional_options_checkbox.click()
+                if extractor_type:
+                    self.popups.create_hub_label_based_extractor_radiobutton.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
             with self.page.expect_response("**/api/hubs/create") as create_resp_info, \
                     self.page.expect_response("**/api/hubs/**?include=short_outline,channels") as data_resp, \
                     self.page.expect_response("**/api/classification-classes/**") as smth_resp:
-                self.next_button.click()
+                self.popups.next_button.click()
             assert create_resp_info.value.ok
             assert data_resp.value.ok
             assert smth_resp.value.ok
@@ -171,7 +182,7 @@ class DocumentsInsightsPage(BasePage):
                 self.qna_checkbox = page.locator('(//span[@class="MuiIconButton-label"])[4] /input')
                 self.script_checkbox = page.locator('(//span[@class="MuiIconButton-label"])[5] /input')
                 self.qna_input = page.locator("input[name='question']")
-
+                self.verify_button = page.locator('//div[@class="options-wrapper"]/div').filter(has_text="Verify")
 
             def upload_file(self, document):
                 """

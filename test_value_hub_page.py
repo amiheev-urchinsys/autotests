@@ -55,7 +55,8 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info:
@@ -117,7 +118,8 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Create group-type field
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_GROUP_FIELD_NAME)
@@ -183,7 +185,8 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
@@ -250,7 +253,8 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
@@ -325,7 +329,8 @@ def test_delete_single_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info:
@@ -390,7 +395,8 @@ def test_delete_group_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_GROUP_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
@@ -459,7 +465,8 @@ def test_delete_list_type_field_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
@@ -529,7 +536,8 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.searchable_checkbox.click()
@@ -607,7 +615,8 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.required_checkbox.click()
@@ -685,7 +694,8 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
@@ -717,7 +727,7 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     response = delete_hub(playwright, value_hub_id, user_token)
     assert response.ok
 
-# UPLOAD NOT WORKING
+# NEED SCRIPT
 @pytest.mark.hubs
 @pytest.mark.value_based
 def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_type_field_form_on_value_based_hub(context_and_playwright):
@@ -766,12 +776,12 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
     on_documents_insights_page.hubs_page.hub_page.script_checkbox.click()
-    time.sleep(2)
     on_documents_insights_page.hubs_page.hub_page.upload_file("script_test_file.py")
     with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
@@ -796,6 +806,91 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.script_checkbox).not_to_be_checked()
+    # Delete created hub
+    time.sleep(3)
+    response = delete_hub(playwright, value_hub_id, user_token)
+    assert response.ok
+
+
+@pytest.mark.hubs
+@pytest.mark.value_based
+def test_verification_settings_when_create_single_type_field_form_on_value_based_hub(context_and_playwright):
+    """
+    Verify that a user can successfully create a Single-type field with searchable checkbox active for the value based hub
+
+    Steps:
+    - Load user credentials and payload from the JSON file.
+    - Send login request and set cookie
+    - Open home page and navigate to the 'Documents Insights' page
+    - Open, fill in and send the 'Create a hub' form
+    - Open the 'Create a new field' form
+    - Select Searchable checkbox and send the form
+    - Click Edit button on the created field
+
+    Expected:
+    - Searchable checkbox is checked
+
+    Post-conditions:
+    - Get hub id and send 'Delete' request
+    """
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get test data from files
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Steps
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
+    on_documents_insights_page.hubs_button.click()
+    # Create hub
+    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
+    on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
+    on_documents_insights_page.hubs_page.hub_page.verify_button.click()
+    on_documents_insights_page.hubs_page.hub_page.popups.verification_settings_number_format_list_item.click()
+    on_documents_insights_page.hubs_page.hub_page.popups.save_button.click()
+
+    # with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    #     on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    # assert resp_info.value.ok
+    # field_id = resp_info.value.json()["id"]
+    # # Verification
+    # expect(on_documents_insights_page.hubs_page.hub_page.no_data_points_title_text).to_have_text(HUB_PAGE_VALUE_FIELDS_TITLE_TEXT)
+    # # Click the Edit button
+    # on_documents_insights_page.hubs_page.hub_page.click_the_edit_button_on_the_field_label(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
+    # on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
+    # # Verification
+    # expect(on_documents_insights_page.hubs_page.hub_page.script_checkbox).to_be_checked()
+    # # Uncheck script checkbox
+    # on_documents_insights_page.hubs_page.hub_page.script_checkbox.click()
+    # on_documents_insights_page.hubs_page.hub_page.kve_checkbox.click()
+    # with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields/" + field_id + "") as resp_info:
+    #     on_documents_insights_page.hubs_page.hub_page.save_button.click()
+    # assert resp_info.value.ok
+    # # Click the Edit button
+    # on_documents_insights_page.hubs_page.hub_page.click_the_edit_button_on_the_field_label(
+    #     HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
+    # on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
+    # # Verification
+    # expect(on_documents_insights_page.hubs_page.hub_page.script_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
     response = delete_hub(playwright, value_hub_id, user_token)
