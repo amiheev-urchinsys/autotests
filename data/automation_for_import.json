@@ -1,0 +1,9 @@
+{
+  "name" : "automation_for_import",
+  "description" : "This automation is created using import",
+  "workflow" : {
+    "settings" : {
+      "loadBrowserCache" : false
+    }
+  }
+}

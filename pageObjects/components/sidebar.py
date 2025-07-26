@@ -41,6 +41,7 @@ class Sidebar:
 
     def navigate_to_documents_insights_page(self):
         from pageObjects.documentsInsightsPage import DocumentsInsightsPage
+
         self.sidebar_bottom_section.hover()
         self.toggle_button.click()
         # Wait until request is finished and then continue
@@ -49,4 +50,20 @@ class Sidebar:
         response = resp_info.value
         assert response.ok
         documents_insights_page = DocumentsInsightsPage(self.page)
+
         return documents_insights_page
+
+    def navigate_to_web_automations_page(self):
+        from pageObjects.webAutomationsPage import WebAutomationsPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response("**/api/sbb/automation/list?page=0&size=25&sortDirection=DESC&sortBy=createdOn") as resp_info, \
+                self.page.expect_response("**/api/sbb/automation/**") as resp2_info:
+            self.web_automation_point.click()
+        assert resp_info.value.ok
+        assert resp2_info.value.ok
+        web_automations_page = WebAutomationsPage(self.page)
+
+        return web_automations_page

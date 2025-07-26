@@ -42,3 +42,15 @@ def delete_hub(playwright: Playwright, hub_id, token):
     )
 
     return response
+
+def delete_web_automation(playwright: Playwright, web_automation_id, token):
+    api_request_context = playwright.request.new_context(base_url=stage_ocrg)
+    response = api_request_context.delete(
+        f"/api/sbb/automation/{web_automation_id}",
+        headers={
+            "Context-type": "application/json",
+            "Authorization": "Bearer " + token
+        }
+    )
+
+    return response
