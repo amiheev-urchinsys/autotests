@@ -16,6 +16,7 @@ class WebAutomationsPage(BasePage):
         self.web_automation_page = self.WebAutomationPage(page)
         self.file_input = page.locator("input[type='file']")
 
+
     def upload_file(self, document):
         """
         Uploads a web automation file to create a web automation

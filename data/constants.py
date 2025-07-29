@@ -8,7 +8,9 @@ LOGIN_PAGE_TITLE = "Welcome to Plextera"
 
 # Forgot password page
 FORGOT_PASSWORD_PAGE_TITLE = "Forgot password"
-
+FORGOT_PASSWORD_PAGE_ERROR_EMPTY_EMAIL = "Email address is required"
+FORGOT_PASSWORD_PAGE_ERROR_INVALID_FORMAT = "Invalid email format"
+FORGOT_PASSWORD_PAGE_SUCCESS = "Sent!"
 
 # Home page
 DOMAIN_STAGE_URL = "https://studio.dev.plextera.com"
@@ -19,7 +21,8 @@ HOME_PAGE_DESCRIPTION = "Your All-in-One Workflow Automation Platform"
 
 # Workflows page
 WORKFLOWS_URL = "/workflows"
-
+WORKFLOWS_EMPTY_STATE_TITLE = "Welcome to Plextera Studio!"
+WORKFLOWS_EMPTY_STATE_DESCRIPTION = "It is now possible to fully automate yourdocument processing with Plextera Studio."
 
 # Web Automations page
 WEB_AUTOMATIONS_URL = "/sbb/automation/list"

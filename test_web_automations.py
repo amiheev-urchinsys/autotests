@@ -26,7 +26,7 @@ def test_create_a_web_automation_required_fields_only(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     # payloads = get_list_from_file("payloads.json", "payloads")
     # authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     # users_list = get_list_from_file("user_credentials.json", "users")
@@ -49,7 +49,7 @@ def test_create_a_web_automation_required_fields_only(context_and_playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    # Start test
+    # Start test_smth
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_web_automations_page= on_home_page.sidebar.navigate_to_web_automations_page()
@@ -85,7 +85,7 @@ def test_create_a_web_automation_using_import(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     # payloads = get_list_from_file("payloads.json", "payloads")
     # authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     # users_list = get_list_from_file("user_credentials.json", "users")
@@ -108,7 +108,7 @@ def test_create_a_web_automation_using_import(context_and_playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    # Start test
+    # Start test_smth
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()

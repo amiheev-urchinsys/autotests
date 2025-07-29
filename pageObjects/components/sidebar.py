@@ -67,3 +67,17 @@ class Sidebar:
         web_automations_page = WebAutomationsPage(self.page)
 
         return web_automations_page
+
+    def navigate_to_workflows_page(self):
+        from pageObjects.workflowsPage import WorkflowsPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response(
+                "**/api/studio/workflow/list") as resp_info:
+            self.workflows_point.click()
+        assert resp_info.value.ok
+        workflows_page = WorkflowsPage(self.page)
+
+        return workflows_page

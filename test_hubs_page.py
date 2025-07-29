@@ -30,7 +30,7 @@ def test_create_an_outline_based_hub_only_required_fields(context_and_playwright
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -91,7 +91,7 @@ def test_create_an_outline_based_hub_all_fields(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -153,7 +153,7 @@ def test_disable_an_outline_based_hub_only_required_fields(context_and_playwrigh
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -219,7 +219,7 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
         """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -286,7 +286,7 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -356,7 +356,7 @@ def test_rename_an_outline_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -431,7 +431,7 @@ def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -499,7 +499,7 @@ def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_an
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -568,7 +568,7 @@ def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -638,7 +638,7 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -709,7 +709,7 @@ def test_rename_a_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -793,7 +793,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -880,7 +880,7 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")

@@ -30,7 +30,7 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -93,7 +93,7 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -160,7 +160,7 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -228,7 +228,7 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -304,7 +304,7 @@ def test_delete_single_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -370,7 +370,7 @@ def test_delete_group_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -440,7 +440,7 @@ def test_delete_list_type_field_value_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -511,7 +511,7 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -590,7 +590,7 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -669,7 +669,7 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -751,7 +751,7 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -835,7 +835,7 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")

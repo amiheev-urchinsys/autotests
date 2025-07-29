@@ -28,7 +28,7 @@ def test_create_single_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -88,7 +88,7 @@ def test_create_group_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -148,7 +148,7 @@ def test_create_list_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -211,7 +211,7 @@ def test_create_group_type_field_nested_inside_list_type_field_in_outline_based_
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -283,7 +283,7 @@ def test_create_single_type_field_nested_inside_group_type_field_in_outline_base
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -353,7 +353,7 @@ def test_delete_single_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -420,7 +420,7 @@ def test_delete_group_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -488,7 +488,7 @@ def test_delete_list_type_field_in_outline_based_hub(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -555,7 +555,7 @@ def test_create_outline_document_template(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -623,7 +623,7 @@ def test_rename_outline_template_card(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")
@@ -695,7 +695,7 @@ def test_delete_outline_template_card(context_and_playwright):
     """
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get test data from files
+    # Get test_smth data from files
     payloads = get_list_from_file("payloads.json", "payloads")
     authentication_payload = get_value_by_key_from_list(payloads, "authentication")
     users_list = get_list_from_file("user_credentials.json", "users")

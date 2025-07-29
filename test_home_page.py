@@ -3,7 +3,8 @@ from time import sleep
 
 from playwright.sync_api import Playwright, expect
 
-from data.constants import LOGIN_PAGE_TITLE, DOCUMENTS_INSIGHTS_TITLE
+from data.constants import LOGIN_PAGE_TITLE, DOCUMENTS_INSIGHTS_TITLE, WORKFLOWS_EMPTY_STATE_TITLE, \
+    WORKFLOWS_EMPTY_STATE_DESCRIPTION, DOMAIN_STAGE_URL
 from pageObjects.documentsInsightsPage import DocumentsInsightsPage
 from pageObjects.homePage import HomePage
 from pageObjects.loginPage import LoginPage
@@ -36,7 +37,7 @@ def test_log_out(playwright: Playwright):
     }])
     page = context.new_page()
     # Test
-    page.goto("https://studio.dev.plextera.com")
+    page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_home_page.sidebar.sidebar_bottom_section.hover()
     on_home_page.sidebar.personal_cabinet_dropdown_menu.click()
@@ -71,7 +72,7 @@ def test_navigate_to_documents_insights_page(playwright: Playwright):
     }])
     page = context.new_page()
     # Test
-    page.goto("https://studio.dev.plextera.com")
+    page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     # Verification
@@ -82,4 +83,72 @@ def test_navigate_to_documents_insights_page(playwright: Playwright):
     expect(on_documents_insights_page.pending_tab).to_be_visible()
     expect(on_documents_insights_page.queued_tab).to_be_visible()
     expect(on_documents_insights_page.rejected_tab).to_be_visible()
+
+
+def test_navigate_to_workflows_page(context_and_playwright):
+    # Set the browser
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get data
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Test
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_workflows_page = on_home_page.sidebar.navigate_to_workflows_page()
+    # Verification
+    expect(on_workflows_page.page_title).to_have_text(WORKFLOWS_EMPTY_STATE_TITLE)
+    expect(on_workflows_page.page_description).to_have_text(WORKFLOWS_EMPTY_STATE_DESCRIPTION)
+    expect(on_workflows_page.add_new_workflow_button).to_be_visible()
+
+
+def test_navigate_to_web_automations_page(context_and_playwright):
+    # Set the browser
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get data
+    payloads = get_list_from_file("payloads.json", "payloads")
+    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
+    users_list = get_list_from_file("user_credentials.json", "users")
+    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Test
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()
+    # Verification
+    expect(on_web_automations_page.page_title).to_have_text(WORKFLOWS_EMPTY_STATE_TITLE)
+    expect(on_web_automations_page.page_description).to_have_text(WORKFLOWS_EMPTY_STATE_DESCRIPTION)
+    expect(on_web_automations_page.add_new_workflow_button).to_be_visible()
 

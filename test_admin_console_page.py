@@ -1,4 +1,6 @@
 from playwright.sync_api import Playwright, expect
+
+from data.constants import DOMAIN_STAGE_URL
 from pageObjects.homePage import HomePage
 from pageObjects.registerCompanyOwnerPage import RegisterCompanyOwnerPage
 from utilities.api.api_base import get_user_token
@@ -62,7 +64,7 @@ def test_invite_new_owner(playwright: Playwright):
     }])
     page = context.new_page()
     # Steps to send invitation to new company owner
-    page.goto("https://studio.dev.plextera.com")
+    page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_admin_console_page = on_home_page.sidebar.navigate_to_admin_console_page()
     on_admin_console_page.sidebar_companies_tab.click()
