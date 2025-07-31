@@ -54,3 +54,16 @@ def delete_web_automation(playwright: Playwright, web_automation_id, token):
     )
 
     return response
+
+def create_new_hub(playwright: Playwright, payload, token):
+    api_request_context = playwright.request.new_context(base_url=stage_ocrg)
+    response = api_request_context.post(
+        "/api/hubs/create",
+        data=payload,
+        headers={
+            "Context-type": "application/json",
+            "Authorization": "Bearer " + token
+        }
+    )
+
+    return response

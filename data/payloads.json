@@ -21,6 +21,33 @@
         "email": "",
         "password": ""
       }
+    },
+    {
+      "create_outline_hub": {
+        "description": "",
+        "name": "",
+        "type": "SMART"
+      }
+    },
+    {
+      "create_key_value_hub": {
+        "type": "UNSTRUCTURED",
+        "name": "",
+        "description": "",
+        "datasetDto": {
+          "sourceDatasetType": "BASED_ON_EXISTING"
+        }
+      }
+    },
+    {
+      "create_label_based_hub": {
+        "type": "UNSTRUCTURED",
+        "name": "",
+        "description": "",
+        "datasetDto": {
+          "sourceDatasetType": "NEW"
+        }
+      }
     }
   ]
 }
