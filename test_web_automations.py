@@ -1,11 +1,9 @@
-from operator import truediv
-
 import pytest
 from playwright.sync_api import expect
 from pageObjects.homePage import HomePage
-from utilities.api.api_base import get_user_token, delete_hub, delete_web_automation
-from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
+from utilities.api.api_base import get_user_token, delete_web_automation
 from data.constants import DOMAIN_STAGE_URL
+from utilities.data_processing import get_key_value_from_file
 
 @pytest.mark.web_automations
 def test_create_a_web_automation_required_fields_only(context_and_playwright):
@@ -27,16 +25,11 @@ def test_create_a_web_automation_required_fields_only(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    # payloads = get_list_from_file("payloads.json", "payloads")
-    # authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    # users_list = get_list_from_file("user_credentials.json", "users")
-    # support_data = get_value_by_key_from_list(users_list, "support")
-    # authentication_payload["email"] = support_data["email"]
-    # authentication_payload["password"] = support_data["password"]
-    authentication_payload = {
-        "email": "amiheev@urchinsys.com",
-        "password": "4h@TU3Wa"
-    }
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
     response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
@@ -49,7 +42,7 @@ def test_create_a_web_automation_required_fields_only(context_and_playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    # Start test_smth
+    # Steps
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_web_automations_page= on_home_page.sidebar.navigate_to_web_automations_page()
@@ -86,16 +79,11 @@ def test_create_a_web_automation_using_import(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    # payloads = get_list_from_file("payloads.json", "payloads")
-    # authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    # users_list = get_list_from_file("user_credentials.json", "users")
-    # support_data = get_value_by_key_from_list(users_list, "support")
-    # authentication_payload["email"] = support_data["email"]
-    # authentication_payload["password"] = support_data["password"]
-    authentication_payload = {
-        "email": "amiheev@urchinsys.com",
-        "password": "4h@TU3Wa"
-    }
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
     response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
@@ -108,7 +96,7 @@ def test_create_a_web_automation_using_import(context_and_playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    # Start test_smth
+    # Steps
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()
@@ -128,7 +116,6 @@ def test_create_a_web_automation_using_import(context_and_playwright):
             status = True
             break
     assert status == True
-
     # Delete web automation
     response = delete_web_automation(playwright, web_automation_id, user_token)
     assert response.ok

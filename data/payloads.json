@@ -1,53 +1,51 @@
 {
-  "payloads": [
+  "register_owner_payload": {
+    "email": "amiheev+50@urchinsys.com",
+    "applicationModuleTypes": [
+      "DATASTORE",
+      "DOCUMENT_INSIGHTS",
+      "FORMS",
+      "WEB_AUTOMATION"
+    ],
+    "overrideLastInvite": true
+  },
+  "authentication_payload": {
+    "email": "",
+    "password": ""
+  },
+  "create_outline_hub_payload": {
+    "description": "",
+    "name": "",
+    "type": "SMART"
+  },
+  "create_key_value_hub": {
+    "type": "UNSTRUCTURED",
+    "name": "",
+    "description": "",
+    "datasetDto": {
+      "sourceDatasetType": "BASED_ON_EXISTING"
+    }
+  },
+  "create_label_based_hub": {
+    "type": "UNSTRUCTURED",
+    "name": "",
+    "description": "",
+    "datasetDto": {
+      "sourceDatasetType": "NEW"
+    }
+  },
+  "invalid_emails": [
     {
-      "register": [
-        {
-          "owner": {
-            "email": "amiheev+50@urchinsys.com",
-            "applicationModuleTypes": [
-              "DATASTORE",
-              "DOCUMENT_INSIGHTS",
-              "FORMS",
-              "WEB_AUTOMATION"
-            ],
-            "overrideLastInvite": true
-          }
-        }
-      ]
+      "value": "test"
     },
     {
-      "authentication": {
-        "email": "",
-        "password": ""
-      }
+      "value": "test@"
     },
     {
-      "create_outline_hub": {
-        "description": "",
-        "name": "",
-        "type": "SMART"
-      }
+      "value": "test@test"
     },
     {
-      "create_key_value_hub": {
-        "type": "UNSTRUCTURED",
-        "name": "",
-        "description": "",
-        "datasetDto": {
-          "sourceDatasetType": "BASED_ON_EXISTING"
-        }
-      }
-    },
-    {
-      "create_label_based_hub": {
-        "type": "UNSTRUCTURED",
-        "name": "",
-        "description": "",
-        "datasetDto": {
-          "sourceDatasetType": "NEW"
-        }
-      }
+      "value": "test@test."
     }
   ]
 }

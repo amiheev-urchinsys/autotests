@@ -2,11 +2,10 @@ import time
 
 import pytest
 from playwright.sync_api import expect
-from data.constants import DOMAIN_STAGE_URL, HUB_PAGE_OUTLINE_TEMPLATE_NAME, HUB_PAGE_VALUE_FIELDS_TITLE_TEXT, \
-    HUBS_PAGE_RENAME_POPUP_TITLE, HUBS_PAGE_TAGS_POPUP_TITLE
+from data.constants import DOMAIN_STAGE_URL, HUBS_PAGE_RENAME_POPUP_TITLE, HUBS_PAGE_TAGS_POPUP_TITLE
 from pageObjects.homePage import HomePage
 from utilities.api.api_base import get_user_token, delete_hub
-from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
+from utilities.data_processing import get_key_value_from_file
 
 
 @pytest.mark.hubs
@@ -31,10 +30,8 @@ def test_create_an_outline_based_hub_only_required_fields(context_and_playwright
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -54,7 +51,7 @@ def test_create_an_outline_based_hub_only_required_fields(context_and_playwright
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -66,7 +63,7 @@ def test_create_an_outline_based_hub_only_required_fields(context_and_playwright
     assert resp_info.value.ok
     expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
     # Delete created hub
-    response = delete_hub(playwright, outline_hub_id, user_token)
+    response = delete_hub(playwright, outline_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -92,10 +89,8 @@ def test_create_an_outline_based_hub_all_fields(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -115,7 +110,7 @@ def test_create_an_outline_based_hub_all_fields(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(True)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(True)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -128,7 +123,7 @@ def test_create_an_outline_based_hub_all_fields(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
     # Delete created hub
-    response = delete_hub(playwright, outline_hub_id, user_token)
+    response = delete_hub(playwright, outline_hub_data["id"], user_token)
     assert response.ok
 
 @pytest.mark.hubs
@@ -154,10 +149,8 @@ def test_disable_an_outline_based_hub_only_required_fields(context_and_playwrigh
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -177,7 +170,7 @@ def test_disable_an_outline_based_hub_only_required_fields(context_and_playwrigh
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -189,13 +182,13 @@ def test_disable_an_outline_based_hub_only_required_fields(context_and_playwrigh
     assert resp_info.value.ok
     expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
     on_documents_insights_page.hubs_page.hub_card_switch.click()
-    with page.expect_response("**/api/hubs/" + outline_hub_id + "") as resp_info:
+    with page.expect_response("**/api/hubs/" + outline_hub_data["id"] + "") as resp_info:
         on_documents_insights_page.hubs_page.popups.disable_button.click()
     assert resp_info.value.ok
     # Verification
 
     # Delete hub
-    response = delete_hub(playwright, outline_hub_id, user_token)
+    response = delete_hub(playwright, outline_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -220,10 +213,8 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -243,7 +234,7 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -256,7 +247,7 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
     expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
     on_documents_insights_page.hubs_page.hub_card_meatball_menu.click()
     on_documents_insights_page.hubs_page.hub_card_meatball_menu_delete_point.click()
-    with page.expect_response("**/api/hubs/"+ outline_hub_id +"") as resp_info:
+    with page.expect_response("**/api/hubs/"+ outline_hub_data["id"] +"") as resp_info:
         on_documents_insights_page.hubs_page.popups.delete_button.click()
     assert resp_info.value.ok
     expect(on_documents_insights_page.hubs_page.hub_card).not_to_be_visible()
@@ -287,10 +278,8 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -310,7 +299,7 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -329,7 +318,7 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     # Verification
     expect(on_documents_insights_page.hubs_page.popups.view_details_content_section).to_be_visible()
     # Delete created hub
-    response = delete_hub(playwright, outline_hub_id, user_token)
+    response = delete_hub(playwright, outline_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -357,10 +346,8 @@ def test_rename_an_outline_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     response = get_user_token(playwright, authentication_payload)
@@ -380,7 +367,7 @@ def test_rename_an_outline_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    outline_hub_id, _ = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
+    outline_hub_data = on_documents_insights_page.hubs_page.create_outline_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.add_new_field_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.drag_and_drop_files_button).to_be_visible()
@@ -400,13 +387,13 @@ def test_rename_an_outline_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.popups.body).to_contain_text(HUBS_PAGE_RENAME_POPUP_TITLE)
     # Update an outline hub title
     on_documents_insights_page.hubs_page.popups.rename_input.fill("update outline hub")
-    with page.expect_response("**/api/hubs/"+ outline_hub_id +"") as resp_info:
+    with page.expect_response(f"**/api/hubs/{outline_hub_data["id"]}") as resp_info:
         on_documents_insights_page.hubs_page.popups.save_button.click()
     assert resp_info.value.ok
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_card_title).to_have_text("update outline hub")
     # Delete created hub
-    response = delete_hub(playwright, outline_hub_id, user_token)
+    response = delete_hub(playwright, outline_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -432,10 +419,8 @@ def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -456,7 +441,7 @@ def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -474,7 +459,7 @@ def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_card).to_be_visible()
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -500,10 +485,8 @@ def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_an
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -524,7 +507,7 @@ def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_an
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(True, False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(True, False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -543,7 +526,7 @@ def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_an
     expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -569,10 +552,8 @@ def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -593,7 +574,7 @@ def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(True, True)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(True, True)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -612,7 +593,7 @@ def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_
     expect(on_documents_insights_page.hubs_page.hub_card_description).to_have_text("description")
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -639,10 +620,8 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -663,7 +642,7 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -680,7 +659,7 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     on_documents_insights_page.hubs_page.hub_card_meatball_menu.click()
     on_documents_insights_page.hubs_page.hub_card_meatball_menu_delete_point.click()
     time.sleep(3)
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}") as resp_info:
         on_documents_insights_page.hubs_page.popups.delete_button.click()
     assert resp_info.value.ok
     expect(on_documents_insights_page.hubs_page.hub_card).not_to_be_visible()
@@ -710,10 +689,8 @@ def test_rename_a_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -734,7 +711,7 @@ def test_rename_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -758,14 +735,14 @@ def test_rename_a_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.popups.body).to_contain_text(HUBS_PAGE_RENAME_POPUP_TITLE)
     # Update an outline hub title
     on_documents_insights_page.hubs_page.popups.rename_input.fill("update outline hub")
-    with page.expect_response("**/api/hubs/" + value_hub_id + "") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}") as resp_info:
         on_documents_insights_page.hubs_page.popups.save_button.click()
     assert resp_info.value.ok
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_card_title).to_have_text("update outline hub")
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -794,10 +771,8 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -818,7 +793,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, value_hub_name = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -839,7 +814,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     on_documents_insights_page.hubs_page.hub_card_meatball_menu_tags_point.click()
     # Verification
     expect(on_documents_insights_page.hubs_page.popups.body).to_be_visible()
-    expect(on_documents_insights_page.hubs_page.popups.body).to_contain_text(HUBS_PAGE_TAGS_POPUP_TITLE + " " +value_hub_name)
+    expect(on_documents_insights_page.hubs_page.popups.body).to_contain_text(HUBS_PAGE_TAGS_POPUP_TITLE + " " +value_hub_data["name"])
     # Update an outline hub title
     on_documents_insights_page.hubs_page.popups.tags_for_hub_key_input.fill("key")
     on_documents_insights_page.hubs_page.popups.tags_for_hub_value_input.fill("value")
@@ -854,7 +829,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.popups.tags_for_hub_value_input).to_have_value("value")
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -881,10 +856,8 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -905,7 +878,7 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.upload_documents_button).to_be_visible()
     expect(on_documents_insights_page.hubs_page.hub_page.gear_button).to_be_visible()
@@ -927,5 +900,5 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     # Verification
     expect(on_documents_insights_page.hubs_page.popups.view_details_content_section).to_be_visible()
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok

@@ -1,20 +1,16 @@
 {
-  "invali_data": [
+  "invalid_emails": [
     {
-      "invalid_emails": [
-        {
-          "value": "test"
-        },
-        {
-          "value": "test@"
-        },
-        {
-          "value": "test@test"
-        },
-        {
-          "value": "test@test."
-        }
-      ]
+      "value": "test"
+    },
+    {
+      "value": "test@"
+    },
+    {
+      "value": "test@test"
+    },
+    {
+      "value": "test@test."
     }
   ]
 }

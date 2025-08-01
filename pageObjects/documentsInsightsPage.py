@@ -1,5 +1,3 @@
-import time
-
 from playwright.sync_api import Page
 
 from data.constants import DOCUMENTS_INSIGHTS_PROCESSED_TAB_TITLE, DOCUMENTS_INSIGHTS_PENDING_TAB_TITLE, \
@@ -59,6 +57,11 @@ class DocumentsInsightsPage(BasePage):
             :param all_field_populated: Can be True or False. Default value is False
             :return: hub ID and hub name
             """
+            outline_hub = {
+                "id": "",
+                "name": ""
+            }
+
             self.create_a_hub_button.click()
             self.popups.create_hub_outline_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
@@ -74,9 +77,9 @@ class DocumentsInsightsPage(BasePage):
                 self.popups.next_button.click()
             assert create_resp_info.value.ok
             assert data_resp.value.ok
-            outline_hub_id = create_resp_info.value.json()["id"]
-            outline_hub_name = create_resp_info.value.json()["name"]
-            return outline_hub_id, outline_hub_name
+            outline_hub["id"] = create_resp_info.value.json()["id"]
+            outline_hub["name"] = create_resp_info.value.json()["name"]
+            return outline_hub
 
         def create_value_based_hub(self, all_field_populated: bool = False, extractor_type: bool = False):
             """
@@ -84,8 +87,13 @@ class DocumentsInsightsPage(BasePage):
             If received value is 'true', then all fields will be populated, else only required fields will be populated.
 
             :param all_field_populated: Can be True or False. Default value is False
+            :param extractor_type: Can be True or False. Default value is False
             :return: hub ID and hub name
             """
+            value_hub = {
+                "id": "",
+                "name": ""
+            }
             self.create_a_hub_button.click()
             self.popups.create_hub_value_based_type_card.click()
             # Wait until after the click on the Next button the '/api/hubs/default-name' request will be finished successfully
@@ -106,9 +114,9 @@ class DocumentsInsightsPage(BasePage):
             assert create_resp_info.value.ok
             assert data_resp.value.ok
             assert smth_resp.value.ok
-            value_hub_id = create_resp_info.value.json()["id"]
-            value_hub_name = create_resp_info.value.json()["name"]
-            return value_hub_id, value_hub_name
+            value_hub["id"] = create_resp_info.value.json()["id"]
+            value_hub["name"] = create_resp_info.value.json()["name"]
+            return value_hub
 
         class HubPage(BasePage):
 

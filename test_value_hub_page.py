@@ -6,7 +6,7 @@ from data.constants import DOMAIN_STAGE_URL, HUB_PAGE_VALUE_FIELDS_TITLE_TEXT, H
     HUB_PAGE_VALUE_GROUP_FIELD_NAME, HUB_PAGE_VALUE_LIST_FIELD_NAME, HUB_PAGE_VALUE_NESTED_FIELD_NAME
 from pageObjects.homePage import HomePage
 from utilities.api.api_base import get_user_token, delete_hub
-from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
+from utilities.data_processing import get_key_value_from_file
 
 
 @pytest.mark.hubs
@@ -31,10 +31,8 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -56,10 +54,10 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     # Verification
@@ -68,7 +66,7 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_page.single_field).to_be_visible()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -94,10 +92,8 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -119,13 +115,13 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     # Create group-type field
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_GROUP_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
@@ -135,7 +131,7 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_page.group_field).to_be_visible()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -161,10 +157,8 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -186,12 +180,12 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
@@ -201,7 +195,7 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     expect(on_documents_insights_page.hubs_page.hub_page.list_field).to_be_visible()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -229,10 +223,8 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -254,12 +246,12 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
@@ -267,8 +259,8 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     on_documents_insights_page.hubs_page.hub_page.nested_value_add_new_field.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_NESTED_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields/"+ field_id +"/add-sub-field") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}/add-sub-field") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
@@ -278,7 +270,7 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     expect(on_documents_insights_page.hubs_page.hub_page.nested_field).to_be_visible()
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -305,10 +297,8 @@ def test_delete_single_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -330,21 +320,21 @@ def test_delete_single_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     on_documents_insights_page.hubs_page.hub_page.delete_single_type_field_icon.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields/**") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/**") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.delete_button.click()
     assert resp_info.value.ok
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -371,10 +361,8 @@ def test_delete_group_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -396,25 +384,25 @@ def test_delete_group_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_GROUP_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.group_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
     field_id = response.json()["id"]
     on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields/"+ field_id +"") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.delete_button.click()
     assert resp_info.value.ok
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -441,10 +429,8 @@ def test_delete_list_type_field_value_based_hub(context_and_playwright):
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -466,25 +452,25 @@ def test_delete_list_type_field_value_based_hub(context_and_playwright):
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_LIST_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.list_radiobutton.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields") as resp_info, \
-            page.expect_response("**/api/hubs/"+ value_hub_id +"?include=short_outline") as resp2_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info, \
+            page.expect_response(f"**/api/hubs/{value_hub_data["id"]}?include=short_outline") as resp2_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     assert resp2_info.value.ok
     field_id = response.json()["id"]
     on_documents_insights_page.hubs_page.hub_page.delete_group_type_field_icon.click()
-    with page.expect_response("**/api/hubs/"+ value_hub_id +"/abstract-fields/"+ field_id +"") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.delete_button.click()
     assert resp_info.value.ok
     # Verification
     expect(on_documents_insights_page.hubs_page.hub_page.import_data_points_in_json_format_button).to_be_visible()
     time.sleep(3)
     # Delete created hub
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -512,10 +498,8 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -537,11 +521,11 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.searchable_checkbox.click()
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     field_id = resp_info.value.json()["id"]
@@ -553,7 +537,7 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     expect(on_documents_insights_page.hubs_page.hub_page.searchable_checkbox).to_be_checked()
     # Uncheck searchable checkbox
     on_documents_insights_page.hubs_page.hub_page.searchable_checkbox.click()
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields/"+ field_id +"") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     # Click the Edit button
@@ -563,7 +547,7 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     expect(on_documents_insights_page.hubs_page.hub_page.searchable_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -591,10 +575,8 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -616,11 +598,11 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.required_checkbox.click()
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     field_id = resp_info.value.json()["id"]
@@ -632,7 +614,7 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     expect(on_documents_insights_page.hubs_page.hub_page.required_checkbox).to_be_checked()
     # Uncheck searchable checkbox
     on_documents_insights_page.hubs_page.hub_page.required_checkbox.click()
-    with page.expect_response("**/api/hubs/" + value_hub_id + "/abstract-fields/" + field_id + "") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     # Click the Edit button
@@ -642,7 +624,7 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     expect(on_documents_insights_page.hubs_page.hub_page.required_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -670,10 +652,8 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -695,13 +675,13 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
     on_documents_insights_page.hubs_page.hub_page.qna_checkbox.click()
     on_documents_insights_page.hubs_page.hub_page.qna_input.fill("get only date")
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     field_id = resp_info.value.json()["id"]
@@ -714,7 +694,7 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     expect(on_documents_insights_page.hubs_page.hub_page.qna_checkbox).to_be_checked()
     # Uncheck qna checkbox
     on_documents_insights_page.hubs_page.hub_page.qna_checkbox.click()
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields/" + field_id + "") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     # Click the Edit button
@@ -724,7 +704,7 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     expect(on_documents_insights_page.hubs_page.hub_page.qna_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 # NEED SCRIPT
@@ -752,10 +732,8 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -777,13 +755,13 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.advanced_section.click()
     on_documents_insights_page.hubs_page.hub_page.script_checkbox.click()
     on_documents_insights_page.hubs_page.hub_page.upload_file("script_test_file.py")
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     field_id = resp_info.value.json()["id"]
@@ -797,7 +775,7 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     # Uncheck script checkbox
     on_documents_insights_page.hubs_page.hub_page.script_checkbox.click()
     on_documents_insights_page.hubs_page.hub_page.kve_checkbox.click()
-    with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields/" + field_id + "") as resp_info:
+    with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
         on_documents_insights_page.hubs_page.hub_page.save_button.click()
     assert resp_info.value.ok
     # Click the Edit button
@@ -808,7 +786,7 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     expect(on_documents_insights_page.hubs_page.hub_page.script_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok
 
 
@@ -836,10 +814,8 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get test_smth data from files
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -861,14 +837,14 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
     on_documents_insights_page.hubs_button.click()
     # Create hub
-    value_hub_id, _ = on_documents_insights_page.hubs_page.create_value_based_hub(False)
+    value_hub_data = on_documents_insights_page.hubs_page.create_value_based_hub(False)
     on_documents_insights_page.hubs_page.hub_page.add_data_points_button.click()
     on_documents_insights_page.hubs_page.hub_page.field_name_input.fill(HUB_PAGE_VALUE_SINGLE_FIELD_NAME)
     on_documents_insights_page.hubs_page.hub_page.verify_button.click()
     on_documents_insights_page.hubs_page.hub_page.popups.verification_settings_number_format_list_item.click()
     on_documents_insights_page.hubs_page.hub_page.popups.save_button.click()
 
-    # with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields") as resp_info:
+    # with page.expect_response("f**/api/hubs/{value_hub_data["id"]}/abstract-fields") as resp_info:
     #     on_documents_insights_page.hubs_page.hub_page.save_button.click()
     # assert resp_info.value.ok
     # field_id = resp_info.value.json()["id"]
@@ -882,7 +858,7 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     # # Uncheck script checkbox
     # on_documents_insights_page.hubs_page.hub_page.script_checkbox.click()
     # on_documents_insights_page.hubs_page.hub_page.kve_checkbox.click()
-    # with page.expect_response("**/api/hubs/"+value_hub_id+"/abstract-fields/" + field_id + "") as resp_info:
+    # with page.expect_response(f"**/api/hubs/{value_hub_data["id"]}/abstract-fields/{field_id}") as resp_info:
     #     on_documents_insights_page.hubs_page.hub_page.save_button.click()
     # assert resp_info.value.ok
     # # Click the Edit button
@@ -893,5 +869,5 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     # expect(on_documents_insights_page.hubs_page.hub_page.script_checkbox).not_to_be_checked()
     # Delete created hub
     time.sleep(3)
-    response = delete_hub(playwright, value_hub_id, user_token)
+    response = delete_hub(playwright, value_hub_data["id"], user_token)
     assert response.ok

@@ -2,7 +2,17 @@ from playwright.sync_api import Page
 
 
 class Popups:
+    """
+    Represents and manages all reusable popup components within the application UI.
+
+    This class provides access to common popup elements and actions
+    that can appear across different page
+    """
     def __init__(self, page: Page):
+        """
+        Initializes the popups object with web element locators.
+        :param page: Playwright Page object representing the browser tab or frame.
+        """
         self.page = page
         # Buttons
         self.cancel_button = page.get_by_role("button", name="Cancel")

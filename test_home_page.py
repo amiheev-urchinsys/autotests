@@ -1,30 +1,36 @@
-import time
-from time import sleep
-
 from playwright.sync_api import Playwright, expect
 
 from data.constants import LOGIN_PAGE_TITLE, DOCUMENTS_INSIGHTS_TITLE, WORKFLOWS_EMPTY_STATE_TITLE, \
     WORKFLOWS_EMPTY_STATE_DESCRIPTION, DOMAIN_STAGE_URL
-from pageObjects.documentsInsightsPage import DocumentsInsightsPage
 from pageObjects.homePage import HomePage
 from pageObjects.loginPage import LoginPage
 from utilities.api.api_base import get_user_token
-from utilities.data_processing import get_list_from_file, get_value_by_key_from_list
+from utilities.data_processing import get_key_value_from_file
 
 
-def test_log_out(playwright: Playwright):
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+def test_log_out(context_and_playwright):
+    """
+    This test verifies that a user can successfully log out from the system
+
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to Home page
+    - Oper user menu and select Log out
+
+    Expected:
+    - The Login page is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get data from the json file
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
     response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
-    # Set the browser
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
     # Set the cookie with the token
     context.add_cookies([{
         "name": "access-token-plextera",  # or "auth_token", depending on your app
@@ -35,7 +41,6 @@ def test_log_out(playwright: Playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    page = context.new_page()
     # Test
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
@@ -47,19 +52,29 @@ def test_log_out(playwright: Playwright):
     expect(on_login_page.page_title).to_contain_text(LOGIN_PAGE_TITLE)
 
 
-def test_navigate_to_documents_insights_page(playwright: Playwright):
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+def test_navigate_to_documents_insights_page(context_and_playwright):
+    """
+    This test verifies that a user can successfully navigate to the Documents Insights page using sidebar on the Home page
+
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to the Home page
+    - Navigate to the Documents Insights page
+
+    Expected:
+    - The Documents Insights page is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get data from the json file
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
     response = get_user_token(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
-    # Set the browser
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
     # Set the cookie with the token
     context.add_cookies([{
         "name": "access-token-plextera",  # or "auth_token", depending on your app
@@ -70,7 +85,6 @@ def test_navigate_to_documents_insights_page(playwright: Playwright):
         "secure": True,
         "sameSite": "Lax"
     }])
-    page = context.new_page()
     # Test
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
@@ -86,14 +100,23 @@ def test_navigate_to_documents_insights_page(playwright: Playwright):
 
 
 def test_navigate_to_workflows_page(context_and_playwright):
-    # Set the browser
+    """
+    This test verifies that a user can successfully navigate to the Workflows page
+
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to the Home page
+    - Navigate to the Workflows page
+
+    Expected:
+    - The Workflows page is displayed
+    """
+    # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get data
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
@@ -120,14 +143,23 @@ def test_navigate_to_workflows_page(context_and_playwright):
 
 
 def test_navigate_to_web_automations_page(context_and_playwright):
-    # Set the browser
+    """
+    This test verifies that a user can successfully navigate to the Web Automations page
+
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to the Home page
+    - Navigate to the Web Automations page
+
+    Expected:
+    - The Web Automations page is displayed
+    """
+    # Browser setupr
     context, playwright = context_and_playwright
     page = context.new_page()
     # Get data
-    payloads = get_list_from_file("payloads.json", "payloads")
-    authentication_payload = get_value_by_key_from_list(payloads, "authentication")
-    users_list = get_list_from_file("user_credentials.json", "users")
-    support_data = get_value_by_key_from_list(users_list, "support")
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
