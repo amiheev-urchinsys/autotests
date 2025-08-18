@@ -12,5 +12,27 @@
     {
       "value": "test@test."
     }
+  ],
+  "invalid_passwords": [
+    {
+      "value": "AAAAAAAA",
+      "error_msg": "Password must contain a lowercase letter."
+    },
+    {
+      "value": "aaaaaaaa",
+      "error_msg": "Password must contain an uppercase letter."
+    },
+    {
+      "value": "123456Aa",
+      "error_msg": "Password must contain a special character."
+    },
+    {
+      "value": "a",
+      "error_msg": "Password must be at least 8 characters."
+    },
+    {
+      "value": "A1@aaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllllmmmm",
+      "error_msg": ""
+    }
   ]
 }

@@ -81,3 +81,17 @@ class Sidebar:
         workflows_page = WorkflowsPage(self.page)
 
         return workflows_page
+
+    def navigate_to_sides_page(self):
+        from pageObjects.sidesPage import SidesPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response(
+                "**/api/sides/schedules") as resp_info:
+            self.sides_point.click()
+        assert resp_info.value.ok
+        sides_page = SidesPage(self.page)
+
+        return sides_page

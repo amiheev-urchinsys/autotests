@@ -15,6 +15,11 @@ class WebAutomationsPage(BasePage):
         self.import_button = page.get_by_role("button", name="Import")
         self.web_automation_page = self.WebAutomationPage(page)
         self.file_input = page.locator("input[type='file']")
+        self.table = page.locator('[tablename="automations"]')
+        self.automations_tab = page.locator(".nav-item.ng-star-inserted a").filter(has_text="Automations")
+        self.fragments_tab = page.locator(".nav-item.ng-star-inserted a").filter(has_text="Fragments")
+        self.credentials_tab = page.locator(".nav-item.ng-star-inserted a").filter(has_text="Credentials")
+        self.no_data_row = page.locator('.mat-cell')
 
 
     def upload_file(self, document):

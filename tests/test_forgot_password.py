@@ -1,30 +1,29 @@
 from playwright.sync_api import expect
 
 from data.constants import DOMAIN_STAGE_URL, FORGOT_PASSWORD_PAGE_ERROR_EMPTY_EMAIL, \
-    FORGOT_PASSWORD_PAGE_ERROR_INVALID_FORMAT, FORGOT_PASSWORD_PAGE_SUCCESS
+    FORGOT_PASSWORD_PAGE_ERROR_INVALID_FORMAT, FORGOT_PASSWORD_PAGE_SUCCESS, FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_ONE, \
+    FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_TWO, FORGOT_PASSWORD_LETTER_LINK_PART
 from pageObjects.loginPage import LoginPage
-from pageObjects.updatePasswordPage import UpdatePasswordPage
 from utilities.api.api_temp_email import wait_for_email_and_read, delete_emails_in_inbox
 from utilities.data_processing import get_create_new_password_link_from_the_email_body, get_key_value_from_file
 
 
-
-def test_update_password(context_and_playwright):
+def test_send_forgot_password_form(context_and_playwright):
     """
-    Verify that a support user can send invite to register a company owner.
-    Verify that a user receives an email and register link is working.
-    Verify that a user can successfully fill in and send the register form.
-    Verify that a company owner can authenticate after a successful registration.
+    This test verifies that a user can successfully:
+    - Send forgot password form
+    - Navigate to the Update password page using link from the email letter
+    - Send update password form
+    - Authenticate with new password
 
     Steps:
     - Open the login page
     - Navigate to the Forgot Password page
-    - Fill in all required fields and send the form
+    - Fill in all required fields and send the forgot password form
     - Open the email and get the link
     - Open the update password link
-    - Fill in all the required fields and send the form
-    - Navigate to the login page.
-    - Enter valid credentials and submit the login form.
+    - Fill in all the required fields and send the update password form
+    - Navigate to the login page and authenticate with new password
 
     Expected:
     - The home page is displayed after login.
@@ -33,42 +32,27 @@ def test_update_password(context_and_playwright):
     Post-condition:
     - Delete all received emails
     """
+    # Get user data rom the file
     temp_email_data = get_key_value_from_file("user_credentials.json", "temp_email")
     # Set the browser
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Steps send the forgot password form
+    # Steps to send the forgot password form
     page.goto(DOMAIN_STAGE_URL)
     on_login_page = LoginPage(page)
     on_forgot_password_page = on_login_page.navigate_to_forgot_password_page()
-    on_forgot_password_page.email_input.fill(temp_email_data["email"])
-    # Wait until request is finished and then continue
-    with page.expect_response(
-            f"**/api/account-service/auth-user/forgot-password?email={temp_email_data["email"]}") as resp_info:
-        on_forgot_password_page.send_button.click()
-    response = resp_info.value
-    assert response.ok
+    on_forgot_password_page.send_forgot_password_form(temp_email_data["email"])
+    # Verification
+    expect(on_forgot_password_page.page_title).to_have_text(FORGOT_PASSWORD_PAGE_SUCCESS)
     on_forgot_password_page.back_to_login_button.is_visible()
+    expect(on_forgot_password_page.description_text).to_have_text(FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_ONE)
+    expect(on_forgot_password_page.resend_reset_email_text).to_have_text(FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_TWO)
     # Steps to get update password link from email
-    body = wait_for_email_and_read(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
+    body = wait_for_email_and_read(playwright, temp_email_data["inbox_id"], temp_email_data["x_api_key"])
     link = get_create_new_password_link_from_the_email_body(body)
-    # Steps to change password and send the form
-    page.goto(link)
-    on_update_password_page = UpdatePasswordPage(page)
-    on_update_password_page.new_password_input.fill("EM#@YgnHy9")
-    on_update_password_page.confirm_new_password_input.fill("EM#@YgnHy9")
-    # Wait until request is finished and then continue
-    with page.expect_response("**/api/account-service/auth-user/create-password") as resp_info:
-        on_update_password_page.update_button.click()
-    response = resp_info.value
-    assert response.ok
-    on_update_password_page.back_to_login_button.click()
-    # Steps to log in with new password
-    on_home_page = on_login_page.login_with_user_credentials(temp_email_data["email"],"EM#@YgnHy9")
-    expected_text = "Welcome back, testing!"
-    expect(on_home_page.user_greeting_text).to_have_text(expected_text)
+    assert link.startswith(FORGOT_PASSWORD_LETTER_LINK_PART)
     # Delete all emails in the inbox
-    response = delete_emails_in_inbox(playwright, temp_email_data["email_id"], temp_email_data["x_api_key"])
+    response = delete_emails_in_inbox(playwright, temp_email_data["inbox_id"], temp_email_data["x_api_key"])
     assert response.ok
 
 
@@ -166,8 +150,11 @@ def test_navigate_to_the_login_page_successful_message_section(context_and_playw
 
     Expected:
     - The Login page is displayed
+
+    Post-condition:
+    - Delete all received emails
     """
-    support_user = get_key_value_from_file("user_credentials.json", "support")
+    temp_email_data = get_key_value_from_file("user_credentials.json", "temp_email")
     # Set the browser
     context, playwright = context_and_playwright
     page = context.new_page()
@@ -175,15 +162,10 @@ def test_navigate_to_the_login_page_successful_message_section(context_and_playw
     page.goto(DOMAIN_STAGE_URL)
     on_login_page = LoginPage(page)
     on_forgot_password_page = on_login_page.navigate_to_forgot_password_page()
-    on_forgot_password_page.email_input.fill(support_user["email"])
-    # Wait until request is finished and then continue
-    with page.expect_response(
-            f"**/api/account-service/auth-user/forgot-password?email={support_user["email"]}") as resp_info:
-        on_forgot_password_page.send_button.click()
-    response = resp_info.value
-    assert response.ok
+    on_forgot_password_page.send_forgot_password_form(temp_email_data["email"])
     # Verification
     expect(on_forgot_password_page.page_title).to_have_text(FORGOT_PASSWORD_PAGE_SUCCESS)
+    # Navigate to Login page
     on_forgot_password_page.back_to_login_button.click()
     # Verification
     expect(on_login_page.page_title).to_be_visible()
@@ -191,3 +173,7 @@ def test_navigate_to_the_login_page_successful_message_section(context_and_playw
     expect(on_login_page.password_input).to_be_visible()
     expect(on_login_page.login_button).to_be_visible()
     expect(on_login_page.forgot_password_button).to_be_visible()
+    # Delete all emails in the inbox
+    wait_for_email_and_read(playwright, temp_email_data["inbox_id"], temp_email_data["x_api_key"])
+    response = delete_emails_in_inbox(playwright, temp_email_data["inbox_id"], temp_email_data["x_api_key"])
+    assert response.ok

@@ -36,3 +36,11 @@ def get_create_new_password_link_from_the_email_body(body):
     """
     reg_link = re.search(r'href="([^"]+create-password[^"]+)"', body)
     return reg_link.group(1)
+
+def write_new_password_to_temp_email(file_name, new_password):
+    with open("data/" + file_name + "") as f:
+        file_data = json.load(f)
+
+    file_data["temp_email"]["password"] = new_password
+    with open("data/" + file_name + "", "w") as f:
+        json.dump(file_data, f, indent=4)

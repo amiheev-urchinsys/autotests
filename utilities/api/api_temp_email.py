@@ -68,18 +68,18 @@ def delete_email(playwright: Playwright, email_id, x_api_key):
     return response
 
 
-def delete_emails_in_inbox(playwright: Playwright, email_id, x_api_key):
+def delete_emails_in_inbox(playwright: Playwright, inbox_id, x_api_key):
     """
     Delete created temporary email address.
 
     :param playwright: An instance of the Playwright library used to create the API request context.
-    :param email_id: Email ID
+    :param inbox_id: inbox ID
     :param x_api_key: a unique token that identifies the client.
     :return: Response...
     """
     api_request_context = playwright.request.new_context(base_url=mailslurp)
     response = api_request_context.delete(
-        f"/emptyInbox?inboxId={email_id}",
+        f"/emptyInbox?inboxId={inbox_id}",
         headers={
             "Context-type": "application/json",
             "X-API-KEY": x_api_key

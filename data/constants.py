@@ -11,6 +11,9 @@ FORGOT_PASSWORD_PAGE_TITLE = "Forgot password"
 FORGOT_PASSWORD_PAGE_ERROR_EMPTY_EMAIL = "Email address is required"
 FORGOT_PASSWORD_PAGE_ERROR_INVALID_FORMAT = "Invalid email format"
 FORGOT_PASSWORD_PAGE_SUCCESS = "Sent!"
+FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_ONE = "Please check your email. We have sent a password recovery instruction to your email, you’ll receive a reset link in a few seconds."
+FORGOT_PASSWORD_PAGE_DESCRIPTION_PART_TWO = "Didn’t receive a reset email?Please try again"
+FORGOT_PASSWORD_LETTER_LINK_PART = "https://studio.dev.plextera.com/create-password?token="
 
 # Home page
 DOMAIN_STAGE_URL = "https://studio.dev.plextera.com"
@@ -90,3 +93,10 @@ SETTINGS_PAGE_TITLE = "Settings"
 
 # Errors texts
 ERROR_TEXT_INVALID_CREDENTIALS = "Invalid credentials"
+ERROR_TEXT_PASSWORD_LOWERCASE = "Password must contain a lowercase letter."
+ERROR_TEXT_PASSWORD_UPPERCASE = "Password must contain an uppercase letter."
+ERROR_TEXT_PASSWORD_SPECIAL_CHARACTER = "Password must contain a special character."
+ERROR_TEXT_PASSWORD_LENGTH_MIN = "Password must be at least 8 characters."
+ERROR_TEXT_PASSWORD_LENGTH_MAX = ""
+ERROR_TEXT_PASSWORD_DIFFERS = "Passwords do not match."
+ERROR_TEXT_PASSWORD_SAME_WITH_CURRENT = "Your new password cannot be the same as your old password. Please enter a different password."

@@ -180,7 +180,58 @@ def test_navigate_to_web_automations_page(context_and_playwright):
     on_home_page = HomePage(page)
     on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()
     # Verification
-    expect(on_web_automations_page.page_title).to_have_text(WORKFLOWS_EMPTY_STATE_TITLE)
-    expect(on_web_automations_page.page_description).to_have_text(WORKFLOWS_EMPTY_STATE_DESCRIPTION)
-    expect(on_web_automations_page.add_new_workflow_button).to_be_visible()
+    expect(on_web_automations_page.automations_tab).to_contain_class("active")
+    expect(on_web_automations_page.fragments_tab).not_to_contain_class("active")
+    expect(on_web_automations_page.credentials_tab).not_to_contain_class("active")
+    expect(on_web_automations_page.create_button).to_be_visible()
+    expect(on_web_automations_page.import_button).to_be_visible()
+    expect(on_web_automations_page.table).to_be_visible()
+    expect(on_web_automations_page.no_data_row).to_have_text("No data")
+
+
+def test_navigate_to_sides_page(context_and_playwright):
+    """
+    This test case verifies that users can successfully navigate to the SIDES page by clicking the corresponding item in the left sidebar.
+
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to the Home page
+    - Navigate to the SIDES page
+
+    Expected:
+    - The SIDES page is displayed
+    """
+    # Browser setupr
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Get data
+    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
+    support_data = get_key_value_from_file("user_credentials.json", "support")
+    authentication_payload["email"] = support_data["email"]
+    authentication_payload["password"] = support_data["password"]
+    # Get user token to set the cookies
+    response = get_user_token(playwright, authentication_payload)
+    user_token = response.json()["accessToken"]
+    # Set the cookie with the token
+    context.add_cookies([{
+        "name": "access-token-plextera",  # or "auth_token", depending on your app
+        "value": user_token,
+        "domain": "studio.dev.plextera.com",
+        "path": "/",
+        "httpOnly": False,
+        "secure": True,
+        "sameSite": "Lax"
+    }])
+    # Test
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_sides_page = on_home_page.sidebar.navigate_to_sides_page()
+    # Verification
+    expect(on_sides_page.states_and_exchanges_tab).to_have_attribute("aria-selected", "true")
+    expect(on_sides_page.history_tab).to_have_attribute("aria-selected", "false")
+    expect(on_sides_page.pull_schedule_button).to_be_visible()
+    expect(on_sides_page.table).to_be_visible()
+    expect(on_sides_page.test_button).to_be_visible()
+    expect(on_sides_page.pull_button).to_be_visible()
+
 
