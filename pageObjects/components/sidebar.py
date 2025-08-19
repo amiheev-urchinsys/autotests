@@ -13,28 +13,29 @@ class Sidebar:
         self.datastores_point = page.locator('li span').filter(has_text="Datastores")
         self.forms_point = page.locator('li span').filter(has_text="Forms")
         self.sidebar_bottom_section = page.locator('.bottom-section')
-        self.personal_cabinet_dropdown_menu = page.locator('.bottom-section .name')
-        self.personal_cabinet_settings_point = page.locator('span').filter(has_text="Settings")
-        self.personal_cabinet_admin_console_point = page.locator('span').filter(has_text="Admin Console")
-        self.personal_cabinet_log_out_point = page.locator('span').filter(has_text="Log out")
+        self.user_menu_dropdown = page.locator('.bottom-section .name')
+        self.user_menu_settings_point = page.locator('span').filter(has_text="Settings")
+        self.user_menu_admin_console_point = page.locator('span').filter(has_text="Admin Console")
+        self.user_menu_log_out_point = page.locator('span').filter(has_text="Log out")
         self.toggle_button = page.locator('button[aria-label="toggle"]')
         self.logo = page.locator('.logo')
+        self.alerts_point = page.locator('li span').filter(has_text="Alerts")
 
     def logout(self):
         self.sidebar_bottom_section.hover()
-        self.personal_cabinet_dropdown_menu.click()
-        self.personal_cabinet_log_out_point.click()
+        self.user_menu_dropdown.click()
+        self.user_menu_log_out_point.click()
 
-    def open_personal_cabinet_menu(self):
+    def open_user_menu(self):
         self.sidebar_bottom_section.hover()
         self.toggle_button.click()
-        self.personal_cabinet_dropdown_menu.click()
+        self.user_menu_dropdown.click()
 
     def navigate_to_admin_console_page(self):
         from pageObjects.adminConsolePage import AdminConsolePage
 
-        self.open_personal_cabinet_menu()
-        self.personal_cabinet_admin_console_point.click()
+        self.open_user_menu()
+        self.user_menu_admin_console_point.click()
         admin_console_page = AdminConsolePage(self.page)
 
         return admin_console_page
@@ -95,3 +96,48 @@ class Sidebar:
         sides_page = SidesPage(self.page)
 
         return sides_page
+
+
+    def navigate_to_datastores_page(self):
+        from pageObjects.datastoresPage import DatastoresPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response(
+                "**/api/studio/datasource/configuration?page=0&size=10") as resp_info:
+            self.datastores_point.click()
+        assert resp_info.value.ok
+        datastores_page = DatastoresPage(self.page)
+
+        return datastores_page
+
+
+    def navigate_to_forms_page(self):
+        from pageObjects.formsPage import FormsPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response(
+                "**/api/studio/forms?page=0&size=10") as resp_info:
+            self.forms_point.click()
+        assert resp_info.value.ok
+        forms_page = FormsPage(self.page)
+
+        return forms_page
+
+
+    def navigate_to_alerts_page(self):
+        from pageObjects.alertsPage import AlertsPage
+
+        self.sidebar_bottom_section.hover()
+        self.toggle_button.click()
+        # Wait until request is finished and then continue
+        with self.page.expect_response(
+                "**/api/issues-service/issues?page=0&size=10&sortBy=severity&sortDirection=DESC&status=OPEN") as resp_info:
+            self.alerts_point.click()
+        assert resp_info.value.ok
+        alerts_page = AlertsPage(self.page)
+
+        return alerts_page

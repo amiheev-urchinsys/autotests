@@ -14,6 +14,9 @@ class AdminConsolePage:
         self.sidebar_companies_tab = page.locator('div.tab__left').filter(has_text="Companies")
         self.companies_tab = self.CompaniesTab(page)
 
+    def open_companies_tab(self):
+        self.sidebar_companies_tab.click()
+
     class CompaniesTab:
 
         def __init__(self, page: Page):
