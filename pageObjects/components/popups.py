@@ -23,12 +23,17 @@ class Popups:
         self.tags_for_hub_add_another_tag_button = page.get_by_role("button", name="+ Add another tag")
         self.import_automation_import_button = page.get_by_role("button", name="Import")
         self.import_automation_remove_file = page.get_by_role("button", name=" Remove file ")
+        self.invite_button = page.get_by_role("button", name="Invite")
         # Inputs
         self.rename_input = page.locator('input[placeholder="Hub name"]')
         self.tags_for_hub_key_input = page.locator(".key")
         self.tags_for_hub_value_input = page.locator(".value")
         self.create_hub_description_input = page.get_by_role("textbox", name="Enter description")
         self.create_automation_name_input = page.locator("//input[contains(@class, 'this-input')]")
+        self.invite_company_user_email_address_input = page.locator('[name="email"]')
+        self.invite_company_user_role_selector = page.locator(".MuiSelect-select:has(.placeholder)")
+        self.invite_company_user_role_selector_list_administrator_point = page.locator("#\:r2ec\: li").filter(has_text="Administrator")
+        self.invite_company_user_role_selector_list_user_point = page.locator("#\:r2ec\: li").filter(has_text="User")
         # Checkboxes
         self.create_hub_additional_options_checkbox = page.locator('input[type="checkbox"]')
         # Radiobuttons

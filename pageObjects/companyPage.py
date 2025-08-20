@@ -1,7 +1,9 @@
 from playwright.sync_api import Page
 
+from pageObjects.basePage import BasePage
 
-class CompanyPage:
+
+class CompanyPage(BasePage):
 
     def __init__(self, page: Page):
         """
@@ -9,9 +11,10 @@ class CompanyPage:
 
         :param page: Playwright Page object.
         """
-        self.page = page
+        super().__init__(page)
         self.sidebar_add_ons = page.locator('div.tab__left').filter(has_text="Add-ons")
         self.add_ons_tab = self.AddOns(page)
+        self.invite_company_user_button = page.locator(".tab__content-header .link")
 
     class AddOns:
         def __init__(self, page: Page):

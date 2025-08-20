@@ -100,3 +100,6 @@ ERROR_TEXT_PASSWORD_LENGTH_MIN = "Password must be at least 8 characters."
 ERROR_TEXT_PASSWORD_LENGTH_MAX = ""
 ERROR_TEXT_PASSWORD_DIFFERS = "Passwords do not match."
 ERROR_TEXT_PASSWORD_SAME_WITH_CURRENT = "Your new password cannot be the same as your old password. Please enter a different password."
+
+# Popups
+SUCCESS_POPUP_TITLE = "Success!"

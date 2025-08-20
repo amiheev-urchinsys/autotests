@@ -31,13 +31,13 @@ class AdminConsolePage:
             self.filter_tab = AdminConsolePage.CompaniesTab.FilterTab(page)
             self.invite_new_owner_user_popup = AdminConsolePage.CompaniesTab.InviteNewOwnerUserPopUp(page)
             self.table_row = page.locator('tbody tr')
-            self.company_row = page.locator('tbody div').filter(has_text="testingCompany")
+            self.company_row = page.locator('tbody div')
             self.success_popup = AdminConsolePage.CompaniesTab.SuccessPopUp(page)
 
-        def navigate_to_company_page(self):
+        def navigate_to_company_page(self, company_name):
             from pageObjects.companyPage import CompanyPage
 
-            self.company_row.click()
+            self.company_row.filter(has_text=company_name).click()
             company_page = CompanyPage(self.page)
 
             return company_page
