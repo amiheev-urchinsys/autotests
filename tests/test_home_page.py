@@ -4,8 +4,7 @@ from data.constants import LOGIN_PAGE_TITLE, DOCUMENTS_INSIGHTS_TITLE, WORKFLOWS
     WORKFLOWS_EMPTY_STATE_DESCRIPTION, DOMAIN_STAGE_URL
 from pageObjects.homePage import HomePage
 from pageObjects.loginPage import LoginPage
-from utilities.api.api_base import get_user_token
-from utilities.data_processing import get_key_value_from_file
+from utilities.utils import authenticate_with_user_profile
 
 
 def test_log_out(context_and_playwright):
@@ -23,25 +22,8 @@ def test_log_out(context_and_playwright):
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data from the json file
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_home_page.sidebar.sidebar_bottom_section.hover()
@@ -67,25 +49,8 @@ def test_navigate_to_workflows_page(context_and_playwright):
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_workflows_page = on_home_page.sidebar.navigate_to_workflows_page()
@@ -94,51 +59,34 @@ def test_navigate_to_workflows_page(context_and_playwright):
     expect(on_workflows_page.page_description).to_have_text(WORKFLOWS_EMPTY_STATE_DESCRIPTION)
     expect(on_workflows_page.add_new_workflow_button).to_be_visible()
 
-    def test_navigate_to_web_automations_page(context_and_playwright):
-        """
-        This test verifies that a user can successfully navigate to the Web Automations page
+def test_navigate_to_web_automations_page(context_and_playwright):
+    """
+    This test verifies that a user can successfully navigate to the Web Automations page
 
-        Steps:
-        - Get support user token to authenticate
-        - Navigate to the Home page
-        - Navigate to the Web Automations page
+    Steps:
+    - Get support user token to authenticate
+    - Navigate to the Home page
+    - Navigate to the Web Automations page
 
-        Expected:
-        - The Web Automations page is displayed
-        """
-        # Browser setupr
-        context, playwright = context_and_playwright
-        page = context.new_page()
-        # Get data
-        authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-        support_data = get_key_value_from_file("user_credentials.json", "support")
-        authentication_payload["email"] = support_data["email"]
-        authentication_payload["password"] = support_data["password"]
-        # Get user token to set the cookies
-        response = get_user_token(playwright, authentication_payload)
-        user_token = response.json()["accessToken"]
-        # Set the cookie with the token
-        context.add_cookies([{
-            "name": "access-token-plextera",  # or "auth_token", depending on your app
-            "value": user_token,
-            "domain": "studio.dev.plextera.com",
-            "path": "/",
-            "httpOnly": False,
-            "secure": True,
-            "sameSite": "Lax"
-        }])
-        # Test
-        page.goto(DOMAIN_STAGE_URL)
-        on_home_page = HomePage(page)
-        on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()
-        # Verification
-        expect(on_web_automations_page.automations_tab).to_contain_class("active")
-        expect(on_web_automations_page.fragments_tab).not_to_contain_class("active")
-        expect(on_web_automations_page.credentials_tab).not_to_contain_class("active")
-        expect(on_web_automations_page.create_button).to_be_visible()
-        expect(on_web_automations_page.import_button).to_be_visible()
-        expect(on_web_automations_page.table).to_be_visible()
-        expect(on_web_automations_page.no_data_row).to_have_text("No data")
+    Expected:
+    - The Web Automations page is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Test
+    authenticate_with_user_profile(playwright, context, "support")
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_web_automations_page = on_home_page.sidebar.navigate_to_web_automations_page()
+    # Verification
+    expect(on_web_automations_page.automations_tab).to_contain_class("active")
+    expect(on_web_automations_page.fragments_tab).not_to_contain_class("active")
+    expect(on_web_automations_page.credentials_tab).not_to_contain_class("active")
+    expect(on_web_automations_page.create_button).to_be_visible()
+    expect(on_web_automations_page.import_button).to_be_visible()
+    expect(on_web_automations_page.table).to_be_visible()
+    expect(on_web_automations_page.no_data_row).to_have_text("No data")
 
 
 def test_navigate_to_documents_insights_page(context_and_playwright):
@@ -156,25 +104,8 @@ def test_navigate_to_documents_insights_page(context_and_playwright):
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data from the json file
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_documents_insights_page = on_home_page.sidebar.navigate_to_documents_insights_page()
@@ -200,28 +131,11 @@ def test_navigate_to_sides_page(context_and_playwright):
     Expected:
     - The SIDES page is displayed
     """
-    # Browser setupr
+    # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_sides_page = on_home_page.sidebar.navigate_to_sides_page()
@@ -246,28 +160,11 @@ def test_navigate_to_the_datastores_page(context_and_playwright):
     Expected:
     - The Datastores page is displayed
     """
-    # Browser setupr
+    # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_datastores_page = on_home_page.sidebar.navigate_to_datastores_page()
@@ -290,28 +187,11 @@ def test_navigate_to_the_forms_page(context_and_playwright):
     Expected:
     - The Forms page is displayed
     """
-    # Browser setupr
+    # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_forms_page = on_home_page.sidebar.navigate_to_forms_page()
@@ -337,25 +217,8 @@ def test_navigate_to_the_alerts_page(context_and_playwright):
     # Browser setupr
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
-    # Test
+    # Steps
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_alerts_page = on_home_page.sidebar.navigate_to_alerts_page()
@@ -367,7 +230,7 @@ def test_navigate_to_the_alerts_page(context_and_playwright):
     expect(on_alerts_page.no_data_available_text).to_be_visible()
 
 
-def test_open_user_menu(context_and_playwright):
+def test_open_user_menu_of_support_user(context_and_playwright):
     """
     This test case verifies that users can successfully open the personal cabinet menu by clicking the corresponding item in the left sidebar.
 
@@ -378,28 +241,11 @@ def test_open_user_menu(context_and_playwright):
     Expected:
     - The user menu is displayed
     """
-    # Browser setupr
+    # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
-    # Get data
-    authentication_payload = get_key_value_from_file("payloads.json", "authentication_payload")
-    support_data = get_key_value_from_file("user_credentials.json", "support")
-    authentication_payload["email"] = support_data["email"]
-    authentication_payload["password"] = support_data["password"]
-    # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
-    user_token = response.json()["accessToken"]
-    # Set the cookie with the token
-    context.add_cookies([{
-        "name": "access-token-plextera",  # or "auth_token", depending on your app
-        "value": user_token,
-        "domain": "studio.dev.plextera.com",
-        "path": "/",
-        "httpOnly": False,
-        "secure": True,
-        "sameSite": "Lax"
-    }])
     # Test
+    authenticate_with_user_profile(playwright, context, "support")
     page.goto(DOMAIN_STAGE_URL)
     on_home_page = HomePage(page)
     on_home_page.sidebar.open_user_menu()
@@ -407,4 +253,82 @@ def test_open_user_menu(context_and_playwright):
     expect(on_home_page.sidebar.user_menu_dropdown).to_be_visible()
     expect(on_home_page.sidebar.user_menu_settings_point).to_be_visible()
     expect(on_home_page.sidebar.user_menu_admin_console_point).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_log_out_point).to_be_visible()
+
+
+def test_open_user_menu_of_company_owner(context_and_playwright):
+    """
+    This test case verifies that users can successfully open the personal cabinet menu by clicking the corresponding item in the left sidebar.
+
+    Steps:
+    - Get support user token to authenticate
+    - Click the user menu
+
+    Expected:
+    - The user menu is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Test
+    authenticate_with_user_profile(playwright, context, "company_owner")
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_home_page.sidebar.open_user_menu()
+    # Verification
+    expect(on_home_page.sidebar.user_menu_dropdown).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_settings_point).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_admin_console_point).not_to_be_visible()
+    expect(on_home_page.sidebar.user_menu_log_out_point).to_be_visible()
+
+
+def test_open_user_menu_of_company_administrator(context_and_playwright):
+    """
+    This test case verifies that users can successfully open the personal cabinet menu by clicking the corresponding item in the left sidebar.
+
+    Steps:
+    - Get support user token to authenticate
+    - Click the user menu
+
+    Expected:
+    - The user menu is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Test
+    authenticate_with_user_profile(playwright, context, "company_administrator")
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_home_page.sidebar.open_user_menu()
+    # Verification
+    expect(on_home_page.sidebar.user_menu_dropdown).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_settings_point).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_admin_console_point).not_to_be_visible()
+    expect(on_home_page.sidebar.user_menu_log_out_point).to_be_visible()
+
+
+def test_open_user_menu_of_company_user(context_and_playwright):
+    """
+    This test case verifies that users can successfully open the personal cabinet menu by clicking the corresponding item in the left sidebar.
+
+    Steps:
+    - Get support user token to authenticate
+    - Click the user menu
+
+    Expected:
+    - The user menu is displayed
+    """
+    # Browser setup
+    context, playwright = context_and_playwright
+    page = context.new_page()
+    # Test
+    authenticate_with_user_profile(playwright, context, "company_user")
+    page.goto(DOMAIN_STAGE_URL)
+    on_home_page = HomePage(page)
+    on_home_page.sidebar.open_user_menu()
+    # Verification
+    expect(on_home_page.sidebar.user_menu_dropdown).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_settings_point).to_be_visible()
+    expect(on_home_page.sidebar.user_menu_admin_console_point).not_to_be_visible()
     expect(on_home_page.sidebar.user_menu_log_out_point).to_be_visible()

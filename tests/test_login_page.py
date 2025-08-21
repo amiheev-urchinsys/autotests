@@ -168,7 +168,7 @@ def test_error_message_is_displayed_with_invalid_email(context_and_playwright):
     - The application should display 'Invalid credentials' for each failed login attempt.
     """
     # Get user credentials list from the json file
-    invalid_credential = get_key_value_from_file("user_credentials.json", "invalid_email")
+    invalid_credential = get_key_value_from_file("invalid_data.json", "invalid_email")
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
@@ -194,7 +194,7 @@ def test_error_message_is_displayed_with_invalid_password(context_and_playwright
     - The application should display 'Invalid credentials' for each failed login attempt.
     """
     # Get user credentials list from the json file
-    invalid_credential = get_key_value_from_file("user_credentials.json", "invalid_password")
+    invalid_credential = get_key_value_from_file("invalid_data.json", "invalid_password")
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()
@@ -220,7 +220,7 @@ def test_error_message_is_displayed_with_invalid_credentials(context_and_playwri
     - The application should display 'Invalid credentials' for each failed login attempt.
     """
     # Get user credentials list from the json file
-    invalid_credential = get_key_value_from_file("user_credentials.json", "invalid_credentials")
+    invalid_credential = get_key_value_from_file("invalid_data.json", "invalid_credentials")
     # Browser setup
     context, playwright = context_and_playwright
     page = context.new_page()

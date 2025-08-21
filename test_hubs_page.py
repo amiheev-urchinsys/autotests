@@ -4,7 +4,7 @@ import pytest
 from playwright.sync_api import expect
 from data.constants import DOMAIN_STAGE_URL, HUBS_PAGE_RENAME_POPUP_TITLE, HUBS_PAGE_TAGS_POPUP_TITLE
 from pageObjects.homePage import HomePage
-from utilities.api.api_base import get_user_token, delete_hub
+from utilities.api.api_base import authenticate_with_user, delete_hub
 from utilities.data_processing import get_key_value_from_file
 
 
@@ -34,7 +34,7 @@ def test_create_an_outline_based_hub_only_required_fields(context_and_playwright
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -93,7 +93,7 @@ def test_create_an_outline_based_hub_all_fields(context_and_playwright):
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -153,7 +153,7 @@ def test_disable_an_outline_based_hub_only_required_fields(context_and_playwrigh
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -217,7 +217,7 @@ def test_delete_outline_hub_using_delete_point_from_settings_menu(context_and_pl
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -282,7 +282,7 @@ def test_open_view_details_popup_of_the_outline_hub(context_and_playwright):
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -350,7 +350,7 @@ def test_rename_an_outline_hub(context_and_playwright):
     support_data = get_key_value_from_file("user_credentials.json", "support")
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -424,7 +424,7 @@ def test_create_a_value_based_hub_only_required_fields(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -490,7 +490,7 @@ def test_create_a_value_based_hub_only_all_fields_key_value_extractor(context_an
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -557,7 +557,7 @@ def test_create_a_value_based_hub_only_all_fields_label_based_extractor(context_
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -625,7 +625,7 @@ def test_delete_a_value_based_hub_using_delete_point_from_settings_menu(context_
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -694,7 +694,7 @@ def test_rename_a_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -776,7 +776,7 @@ def test_add_tag_to_a_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -861,7 +861,7 @@ def test_open_view_details_popup_of_a_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{

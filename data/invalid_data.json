@@ -34,5 +34,17 @@
       "value": "A1@aaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllllmmmm",
       "error_msg": ""
     }
-  ]
+  ],
+  "invalid_email": {
+    "email": "notregestered@testemail.com",
+    "password": "4h@TU3Wa"
+  },
+  "invalid_password": {
+    "email": "amiheev@urchinsys.com",
+    "password": "not_valid_password"
+  },
+  "invalid_credentials": {
+    "email": "notregestered@testemail.com",
+    "password": "not_valid_password"
+  }
 }

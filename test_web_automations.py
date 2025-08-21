@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import expect
 from pageObjects.homePage import HomePage
-from utilities.api.api_base import get_user_token, delete_web_automation
+from utilities.api.api_base import authenticate_with_user, delete_web_automation
 from data.constants import DOMAIN_STAGE_URL
 from utilities.data_processing import get_key_value_from_file
 
@@ -30,7 +30,7 @@ def test_create_a_web_automation_required_fields_only(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{
@@ -84,7 +84,7 @@ def test_create_a_web_automation_using_import(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set token in cookies
     context.add_cookies([{

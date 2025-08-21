@@ -5,7 +5,7 @@ from playwright.sync_api import expect
 from data.constants import DOMAIN_STAGE_URL, HUB_PAGE_VALUE_FIELDS_TITLE_TEXT, HUB_PAGE_VALUE_SINGLE_FIELD_NAME, \
     HUB_PAGE_VALUE_GROUP_FIELD_NAME, HUB_PAGE_VALUE_LIST_FIELD_NAME, HUB_PAGE_VALUE_NESTED_FIELD_NAME
 from pageObjects.homePage import HomePage
-from utilities.api.api_base import get_user_token, delete_hub
+from utilities.api.api_base import authenticate_with_user, delete_hub
 from utilities.data_processing import get_key_value_from_file
 
 
@@ -36,7 +36,7 @@ def test_create_single_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -97,7 +97,7 @@ def test_create_group_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -162,7 +162,7 @@ def test_create_list_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -228,7 +228,7 @@ def test_create_group_type_field_nested_inside_list_type_field_in_value_based_hu
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -302,7 +302,7 @@ def test_delete_single_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -366,7 +366,7 @@ def test_delete_group_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -434,7 +434,7 @@ def test_delete_list_type_field_value_based_hub(context_and_playwright):
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -503,7 +503,7 @@ def test_check_uncheck_searchable_checkbox_in_create_single_type_field_form_on_v
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -580,7 +580,7 @@ def test_check_uncheck_required_checkbox_in_create_single_type_field_form_on_val
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -657,7 +657,7 @@ def test_check_uncheck_qna_checkbox_in_advanced_section_when_create_single_type_
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -737,7 +737,7 @@ def test_check_uncheck_script_checkbox_in_advanced_section_when_create_single_ty
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{
@@ -819,7 +819,7 @@ def test_verification_settings_when_create_single_type_field_form_on_value_based
     authentication_payload["email"] = support_data["email"]
     authentication_payload["password"] = support_data["password"]
     # Get user token to set the cookies
-    response = get_user_token(playwright, authentication_payload)
+    response = authenticate_with_user(playwright, authentication_payload)
     user_token = response.json()["accessToken"]
     # Set the cookie with the token
     context.add_cookies([{

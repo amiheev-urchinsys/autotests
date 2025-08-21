@@ -103,3 +103,8 @@ ERROR_TEXT_PASSWORD_SAME_WITH_CURRENT = "Your new password cannot be the same as
 
 # Popups
 SUCCESS_POPUP_TITLE = "Success!"
+
+
+# API
+PLEXTERA_STAGE_API_URL = "https://api.dev.plextera.com"
+OCRG_STAGE_API_URL = "https://ocrf.ocrgateway.com"
